@@ -1302,12 +1302,13 @@ async function ensureMic(){
   try{ const st=await navigator.mediaDevices.getUserMedia({audio:true}); st.getTracks().forEach(t=>t.stop()); micReady=true; return true; }
   catch(e){ return e.name||'error'; }
 }
+const IS_SAFARI=/Safari/.test(navigator.userAgent)&&!/Chrome|Chromium|Edg|CriOS|FxiOS/.test(navigator.userAgent);
 const MIC_HELP=`<button class="btn violet mt" onclick="screenMic('lesson')">🛠️ Как включить микрофон</button>`;
 async function speakTry(){
   if(S.sp.busy) return; S.sp.busy=true;
   const t=S.tasks[S.i], tgH=t.s?t.s.t.join(''):t.w.h, need=t.s?0.6:0.5, mic=$('#mic'), heard=$('#heard');
   speechSynthesis.cancel();
-  if(!ON_SERVER){ S.sp.busy=false; heard.innerHTML='Микрофон работает только если тренажёр открыт через «Запустить тренажер.command». Попроси взрослых 🙂'+MIC_HELP; return; }
+  if(!ON_SERVER){ S.sp.busy=false; heard.innerHTML='Микрофон работает только если тренажёр открыт по ссылке aleksarulezzz.ru/chineese. Попроси взрослых 🙂'+MIC_HELP; return; }
   heard.textContent='Включаю микрофон…';
   const ok=await ensureMic();
   if(ok!==true){ S.sp.busy=false; heard.innerHTML='Нет доступа к микрофону 🎤 Попроси взрослых помочь — это займёт минуту.'+MIC_HELP; return; }
@@ -1315,7 +1316,7 @@ async function speakTry(){
   listen((alts,err)=>{
     S.sp.busy=false; if(!$('#mic')) return; mic.classList.remove('on');
     if(err){
-      heard.innerHTML= err==='not-allowed'||err==='service-not-allowed' ? 'Микрофон есть, но распознавание речи выключено в настройках Mac.'+MIC_HELP
+      heard.innerHTML= err==='not-allowed'||err==='service-not-allowed' ? (IS_SAFARI?'Safari не умеет слушать китайский 🙈 Попроси взрослых открыть тренажёр в Google Chrome — там всё работает!':'Микрофон есть, но распознавание речи выключено.')+MIC_HELP
         : err==='no-speech' ? 'Я ничего не услышал. Нажми 🎤 и скажи погромче!' : `Микрофон не сработал (${err}). Попробуй ещё раз.`+MIC_HELP;
       return;
     }
@@ -1640,14 +1641,14 @@ function screenMic(from){
   MC.from=from||MC.from||'parent';
   const isSafari=/Safari/.test(navigator.userAgent)&&!/Chrome|Chromium|Edg/.test(navigator.userAgent);
   const row=(ok,title,body)=>`<div class="check"><span class="st">${ok===true?'✅':ok===false?'❌':'⬜'}</span><div><b>${title}</b>${body?`<div class="small mt">${body}</div>`:''}</div></div>`;
-  const safariSite=`В верхнем меню Mac: <b>Safari → Настройки для «localhost»…</b> → в строке <b>Микрофон</b> выберите <b>«Разрешить»</b>. Затем нажмите «Проверить» ещё раз.`;
-  const macMic=`Откройте <b>Системные настройки → Конфиденциальность и безопасность → Микрофон</b> и включите переключатель у <b>${isSafari?'Safari':'вашего браузера'}</b>. Браузер попросит перезапуститься — согласитесь, затем снова запустите тренажёр ярлыком.`;
-  const macSR=`Откройте <b>Системные настройки → Конфиденциальность и безопасность → Распознавание речи</b> и включите <b>${isSafari?'Safari':'браузер'}</b>. Если Safari там нет: <b>Системные настройки → Клавиатура → Диктовка</b> — включите диктовку. Затем перезапустите Safari.`;
+  const safariSite=`В верхнем меню Mac: <b>Safari → Настройки для «${location.hostname}»…</b> → в строке <b>Микрофон</b> выберите <b>«Разрешить»</b>. Затем нажмите «Проверить» ещё раз.`;
+  const macMic=`Откройте <b>Системные настройки → Конфиденциальность и безопасность → Микрофон</b> и включите переключатель у <b>${isSafari?'Safari':'вашего браузера'}</b>. Браузер попросит перезапуститься — согласитесь, затем снова откройте тренажёр по ссылке.`;
+  const macSR=isSafari?`На этом Mac Safari распознаёт только русскую речь, китайскую — нет. <b>Откройте тренажёр в Google Chrome</b> по той же ссылке <b>${location.host}${location.pathname}</b> — там китайский распознаётся сразу. Прогресс перенесите так: здесь в Safari «👨‍👩‍👧 Родителям» → «💾 Сохранить в файл», а в Chrome — «📂 Загрузить из файла».`:`Откройте <b>Системные настройки → Конфиденциальность и безопасность → Распознавание речи</b> и включите <b>${isSafari?'Safari':'браузер'}</b>. Если Safari там нет: <b>Системные настройки → Клавиатура → Диктовка</b> — включите диктовку. Затем перезапустите Safari.`;
   app.innerHTML=back(MC.from==='lesson'?'S?renderTask():screenHome()':MC.from==='parent'?'screenParent()':'screenHome()','🎤 Микрофон')+`
   <div class="card mt"><p style="margin-top:0">Проверим по шагам, что мешает. Компьютер сам покажет, где нажать.</p>
     ${row(ON_SERVER,'1. Тренажёр открыт правильно', ON_SERVER?'Тренажёр открыт по ссылке — микрофону можно работать.':'Сейчас тренажёр открыт как файл. Закройте эту вкладку и дважды щёлкните «Запустить тренажер.command» в папке тренажёра.')}
     ${row(!!SR,'2. Браузер умеет распознавать речь', SR?'':'Этот браузер не умеет. Используйте Safari или Chrome.')}
-    ${row(MC.mic,'3. Доступ к микрофону', MC.mic===false?(MC.micErr==='NotFoundError'?'Микрофон не найден. Подключите наушники с микрофоном или проверьте встроенный.':`Safari не дал доступ. ${safariSite}<br><br>Если окна с вопросом не было вообще: ${macMic}`):MC.mic?'Микрофон работает!':'Нажмите кнопку ниже. Safari спросит: «Разрешить localhost использовать микрофон?» — нажмите <b>«Разрешить»</b>.')}
+    ${row(MC.mic,'3. Доступ к микрофону', MC.mic===false?(MC.micErr==='NotFoundError'?'Микрофон не найден. Подключите наушники с микрофоном или проверьте встроенный.':`Safari не дал доступ. ${safariSite}<br><br>Если окна с вопросом не было вообще: ${macMic}`):MC.mic?'Микрофон работает!':'Нажмите кнопку ниже. Браузер спросит: «Разрешить использовать микрофон?» — нажмите <b>«Разрешить»</b>.')}
     ${row(MC.sr,'4. Распознавание китайской речи', MC.sr===false?(MC.srErr==='not-allowed'||MC.srErr==='service-not-allowed'?macSR:MC.srErr==='no-speech'?'Ничего не услышал — нажмите ещё раз и скажите «你好» (ни хао) погромче.':`Ошибка: ${MC.srErr}. Попробуйте ещё раз.`):MC.sr?`Услышал: <span class="zh">${MC.heard}</span> — всё работает! 🎉`:'После шага 3 нажмите «Скажи 你好» и произнесите «ни хао».')}
     <div class="row wrap mt">
       <button class="btn" ${ON_SERVER?'':'disabled'} onclick="micStep3()">🎤 Проверить доступ</button>
