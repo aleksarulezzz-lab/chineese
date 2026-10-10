@@ -1,0 +1,1777 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Китайский с героем</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<!-- Hanzi Writer: анимация порядка черт и проверка письма (нужен интернет; без него — обычные прописи) -->
+<script async src="https://cdn.jsdelivr.net/npm/hanzi-writer@3/dist/hanzi-writer.min.js"></script>
+<style>
+:root{
+  --bg:#fff6e8; --card:#ffffff; --ink:#2b2350; --muted:#7a7396; --line:#eee3d0;
+  --primary:#ff7a45; --primary-d:#e85f2a; --violet:#7c5cff; --green:#22b573; --red:#ef4a5a; --gold:#ffb703;
+  --t1:#e53935; --t2:#f28c00; --t3:#1f9d55; --t4:#2f6fe4; --t0:#8a8a9a;
+  --r:22px; --shadow:0 6px 0 rgba(43,35,80,.08), 0 10px 24px rgba(43,35,80,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Nunito",ui-rounded,"SF Pro Rounded",system-ui,-apple-system,sans-serif;font-weight:700;min-height:100vh;
+  background-image:radial-gradient(circle at 10% 0%,#ffe3c4 0,transparent 40%),radial-gradient(circle at 100% 30%,#e9e2ff 0,transparent 35%);}
+.zh{font-family:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;font-weight:600}
+.kai{font-family:"Kaiti SC","STKaiti","KaiTi","PingFang SC",serif}
+#app{max-width:760px;margin:0 auto;padding:16px 16px 60px}
+button{font:inherit;color:inherit;cursor:pointer;border:none;-webkit-tap-highlight-color:transparent}
+h1,h2,h3{margin:0;font-weight:900}
+.t1{color:var(--t1)}.t2{color:var(--t2)}.t3{color:var(--t3)}.t4{color:var(--t4)}.t0{color:var(--t0)}
+
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+.row{display:flex;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.cen{justify-content:center}
+.wrap{flex-wrap:wrap}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.center{text-align:center}
+.mt{margin-top:14px}.mt2{margin-top:24px}
+
+.btn{background:var(--primary);color:#fff;border-radius:18px;padding:14px 22px;font-size:20px;font-weight:900;box-shadow:0 5px 0 var(--primary-d);transition:transform .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--primary-d)}
+.btn.big{width:100%;font-size:26px;padding:20px}
+.btn.violet{background:var(--violet);box-shadow:0 5px 0 #5b3fd9}
+.btn.green{background:var(--green);box-shadow:0 5px 0 #178a56}
+.btn.ghost{background:#fff;color:var(--ink);box-shadow:0 5px 0 var(--line);border:2px solid var(--line)}
+.btn:disabled{opacity:.45}
+.icon-btn{background:#fff;border-radius:14px;padding:8px 12px;font-size:18px;box-shadow:0 3px 0 var(--line);border:2px solid var(--line)}
+.linkbtn{background:none;color:var(--muted);text-decoration:underline;font-size:15px}
+
+.topbar{display:flex;gap:8px;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap}
+.pill{background:#fff;border-radius:999px;padding:8px 12px;box-shadow:var(--shadow);font-size:16px;white-space:nowrap}
+
+/* HERO */
+.hero-card{text-align:center;position:relative;overflow:hidden}
+.scene{position:relative;border-radius:24px;margin:8px 0 0;overflow:hidden}
+.scene .deco{position:absolute;font-size:44px;opacity:.85}
+.scene .deco.a{left:10px;bottom:6px}.scene .deco.b{right:12px;top:8px;font-size:34px}
+.hero-stage{position:relative;width:220px;height:220px;margin:6px auto 0}
+.aura{position:absolute;inset:18px;border-radius:50%;background:radial-gradient(circle,var(--c) 0%,transparent 70%);opacity:calc(.15 + var(--en) * .55);animation:pulse 2.4s ease-in-out infinite}
+.aura.rainbow{background:conic-gradient(#ff4d4d,#ffb703,#22b573,#38bdf8,#a855f7,#ff4d4d);filter:blur(22px)}
+.ring{position:absolute;border-radius:50%;border:3px dashed var(--c);opacity:.35;animation:spin 18s linear infinite}
+.hero-emoji{position:absolute;inset:0;display:grid;place-items:center;font-size:110px;line-height:1;filter:saturate(calc(.25 + var(--en)*.75))}
+.mood-top .hero-emoji{animation:bounce 1.2s ease-in-out infinite}
+.mood-ok .hero-emoji{animation:bounce 2.4s ease-in-out infinite}
+.mood-sleep .hero-emoji{transform:rotate(-8deg);opacity:.75}
+.zzz{position:absolute;right:18px;top:10px;font-size:34px;animation:float 2s ease-in-out infinite}
+.pet{position:absolute;right:-18px;bottom:0;font-size:54px;animation:bounce 1.7s ease-in-out infinite}
+.orbit{position:absolute;inset:0;animation:spin 30s linear infinite}
+.orbit span{position:absolute;left:50%;top:50%;font-size:30px;margin:-17px 0 0 -17px}
+.orbit span i{display:inline-block;font-style:normal;animation:spin 30s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(1.08)}}
+@keyframes bounce{50%{transform:translateY(-10px)}}
+@keyframes float{50%{transform:translateY(-8px)}}
+.bubble{display:inline-block;background:#fff;border:2px solid var(--line);border-radius:18px;padding:10px 14px;margin-top:6px;font-size:17px;max-width:95%}
+.bar{height:16px;background:#f1eadc;border-radius:999px;overflow:hidden}
+.bar>div{height:100%;border-radius:999px;transition:width .6s}
+.bar.thin{height:10px}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{background:#faf6ee;border-radius:14px;padding:8px}
+.stat b{display:block;font-size:22px}
+
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:16px}
+.tile{background:#fff;border-radius:20px;padding:16px 10px;box-shadow:var(--shadow);text-align:center;font-size:18px}
+.tile .e{font-size:40px;display:block;margin-bottom:4px}
+.tile:active{transform:scale(.97)}
+
+/* quests */
+.quest{display:grid;grid-template-columns:36px 1fr auto;gap:8px;align-items:center;margin-top:10px}
+.quest .qe{font-size:26px}
+.quest.done{opacity:.7}
+.chest{font-size:90px;animation:bounce 1s ease-in-out infinite}
+
+/* choose hero */
+.heroes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.hero-pick{background:#fff;border-radius:20px;padding:14px;box-shadow:var(--shadow);border:4px solid transparent;text-align:center}
+.hero-pick.sel{border-color:var(--primary)}
+.hero-pick .e{font-size:56px}
+.evo{font-size:22px;letter-spacing:2px;margin-top:4px}
+.hero-pick.gta{position:relative;overflow:hidden;padding:0 0 12px}
+.hero-pick.gta.sel{border-color:var(--c)}
+.pv{position:relative;height:110px;display:grid;place-items:center;overflow:hidden;margin-bottom:8px}
+.pv::before{content:'';position:absolute;inset:-24px;background:radial-gradient(circle at 50% 45%,#fff8 0,transparent 45%),linear-gradient(160deg,var(--c),color-mix(in srgb,var(--c) 55%,#000));filter:blur(14px);opacity:.85}
+.pv .e{position:relative;font-size:64px;filter:blur(1.6px) drop-shadow(0 4px 10px #0005);transition:filter .3s,transform .3s}
+.hero-pick.gta:hover .pv .e,.hero-pick.gta.sel .pv .e{filter:blur(.5px) drop-shadow(0 4px 10px #0005);transform:scale(1.06)}
+.pv .tag{position:absolute;left:8px;bottom:6px;font-size:12px;color:#fff;background:#0006;border-radius:8px;padding:2px 8px;backdrop-filter:blur(4px)}
+.hero-card.tinted::before{content:'';position:absolute;inset:-40px -40px auto;height:320px;background:radial-gradient(circle at 50% 50%,var(--c),transparent 65%);filter:blur(30px);opacity:.45;pointer-events:none}
+.hero-card.tinted>*{position:relative}
+input[type=text],input[type=number]{font:inherit;font-size:22px;padding:12px 16px;border-radius:16px;border:3px solid var(--line);width:100%;background:#fff;color:var(--ink)}
+
+/* battle */
+.battle{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.battle .h,.battle .m{font-size:42px;transition:transform .25s}
+.battle .m.boss{font-size:58px}
+.battle .h.hit{transform:translateX(24px) scale(1.2)}
+.battle .m.hurt{animation:hurt .4s}
+@keyframes hurt{25%{transform:translateX(8px) rotate(10deg);filter:brightness(2)}75%{transform:translateX(-6px)}}
+.hp{flex:1}
+.hp .bar>div{background:linear-gradient(90deg,#ff5f6d,#ffc371)}
+.combo{display:inline-block;background:linear-gradient(90deg,#ff7a45,#ff3d6e);color:#fff;border-radius:999px;padding:2px 10px;font-size:15px;animation:pulse 1s infinite}
+.task{text-align:center}
+.big-hz{font-size:96px;line-height:1.15}
+.pinyin{font-size:30px;font-weight:800}
+.ru-tr{font-size:18px;color:var(--muted)}
+.emoji-xl{font-size:80px}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.options.one{grid-template-columns:1fr}
+.opt{background:#fff;border:3px solid var(--line);border-radius:20px;padding:14px 8px;font-size:20px;min-height:96px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.options.one .opt{min-height:60px}
+.opt .oe{font-size:44px}
+.opt .ohz{font-size:48px}
+.opt.right{background:#dcfce7;border-color:var(--green)}
+.opt.wrongc{background:#ffe4e6;border-color:var(--red);animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.feedback{margin-top:16px;border-radius:20px;padding:14px;font-size:20px}
+.feedback.ok{background:#dcfce7;color:#11643f}
+.feedback.no{background:#fff1e6;color:#8a3b12}
+.speak{font-size:34px;background:var(--violet);color:#fff;border-radius:50%;width:84px;height:84px;box-shadow:0 5px 0 #5b3fd9}
+.speak.mic{background:var(--primary);box-shadow:0 5px 0 var(--primary-d);width:104px;height:104px;font-size:44px}
+.speak.mic.on{background:var(--red);animation:pulse .8s infinite}
+.tip{background:#fff7d6;border-radius:16px;padding:10px 14px;margin-top:12px;font-size:17px}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.match .col{display:grid;gap:10px}
+.mi{background:#fff;border:3px solid var(--line);border-radius:18px;min-height:78px;font-size:40px;box-shadow:0 4px 0 var(--line)}
+.mi.sel{border-color:var(--violet);background:#efe9ff}
+.mi.done{visibility:hidden}
+.mi.bad{animation:shake .35s;border-color:var(--red)}
+
+/* build sentence */
+.ans{min-height:84px;border-bottom:3px dashed var(--line);display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:flex-end;padding:10px 0;margin-top:14px}
+.bank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
+.tl{background:#fff;border:3px solid var(--line);border-radius:14px;padding:6px 14px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center}
+.tl .zh{font-size:32px;line-height:1.2}
+.tl small{font-size:13px;color:var(--muted)}
+.tl.used{visibility:hidden}
+
+.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 20px;border-radius:16px;font-size:18px;z-index:10;box-shadow:var(--shadow);animation:drop .3s;max-width:92vw;text-align:center}
+@keyframes drop{from{transform:translate(-50%,-30px);opacity:0}}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:9}
+.confetti i{position:absolute;top:-20px;font-style:normal;font-size:26px;animation:fall 1.8s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+
+/* tones */
+.tones{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tone{border-radius:18px;padding:12px;color:#fff;text-align:left;font-size:16px}
+.tone b{font-size:26px;display:block}
+.tone.c1{background:var(--t1)}.tone.c2{background:var(--t2)}.tone.c3{background:var(--t3)}.tone.c4{background:var(--t4)}
+
+/* writing */
+.pad{position:relative;width:min(320px,86vw);aspect-ratio:1;margin:12px auto;background:#fffdf8;border:4px solid #e7b9a4;border-radius:12px;touch-action:none}
+.pad svg.grid{position:absolute;inset:0;width:100%;height:100%}
+.pad #hw{position:absolute;inset:0}
+.trace{position:absolute;inset:0;display:grid;place-items:center;font-size:min(250px,68vw);color:#000;opacity:.12;line-height:1;pointer-events:none}
+.pad canvas{position:absolute;inset:0;width:100%;height:100%}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{background:#fff;border:3px solid var(--line);border-radius:14px;padding:6px 12px;font-size:28px}
+.chip.sel{border-color:var(--primary);background:#fff0e8}
+
+/* map */
+.path{position:relative;display:flex;flex-direction:column;gap:18px;padding:10px 0}
+.path::before{content:'';position:absolute;left:50%;top:0;bottom:0;border-left:6px dotted #e6d6bb;transform:translateX(-50%)}
+.node-row{display:flex;position:relative}
+.node{position:relative;width:62%;background:#fff;border-radius:22px;box-shadow:var(--shadow);padding:12px 14px;display:flex;gap:12px;align-items:center;text-align:left;border:4px solid transparent}
+.node .ic{font-size:40px;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#faf6ee;flex:none}
+.node.cur{border-color:var(--primary)}
+.node.done .ic{background:#dcfce7}
+.node.lock{opacity:.5;filter:grayscale(.6)}
+.node.boss .ic{background:#ffe4e6}
+.node.boss.done .ic{background:#fef3c7}
+.here{position:absolute;top:-16px;font-size:34px;animation:bounce 1.2s infinite}
+
+/* shop */
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.item{background:#fff;border-radius:18px;padding:12px;text-align:center;box-shadow:var(--shadow);border:3px solid transparent}
+.item.on{border-color:var(--green)}
+.item .e{font-size:48px}
+.item .btn{padding:8px 14px;font-size:16px;margin-top:6px}
+
+/* stories */
+.chat{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.msg{display:flex;gap:8px;align-items:flex-end;max-width:92%}
+.msg.me{align-self:flex-end;flex-direction:row-reverse}
+.msg .av{font-size:40px;flex:none}
+.msg .bb{background:#fff;border-radius:18px;padding:10px 14px;box-shadow:var(--shadow);text-align:left;cursor:pointer}
+.msg.me .bb{background:#efe9ff}
+.msg .bb .zh{font-size:28px}
+.msg details{font-size:14px;color:var(--muted)}
+.msg summary{font-size:13px}
+
+/* dictionary */
+.unit{margin-top:14px}
+.unit.locked{opacity:.5}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.w{background:#faf6ee;border-radius:16px;padding:10px;text-align:center}
+.w .hz{font-size:34px}
+.stars{color:var(--gold);letter-spacing:1px}
+
+.ach{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.ach .a{background:#fff;border-radius:18px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.ach .a.off{filter:grayscale(1);opacity:.45}
+.ach .a .e{font-size:44px}
+
+.chart{display:flex;align-items:flex-end;gap:4px;height:120px;margin-top:10px}
+.chart div{flex:1;background:var(--violet);border-radius:6px 6px 0 0;min-height:3px;position:relative}
+.chart div.zero{background:#e6def7}
+table{width:100%;border-collapse:collapse;font-size:16px}
+td,th{padding:6px;border-bottom:1px solid var(--line);text-align:left}
+details{margin-top:10px}
+summary{cursor:pointer}
+label.setting{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+/* легендарные эволюции */
+.legend1 .hero-emoji{filter:drop-shadow(0 0 14px #ffc233) drop-shadow(0 0 4px #fff)}
+.legend2 .hero-emoji{filter:drop-shadow(0 0 16px #a855f7) drop-shadow(0 0 6px #38bdf8)}
+.legend2 .aura{background:conic-gradient(#ff4d4d,#ffb703,#22b573,#38bdf8,#a855f7,#ff4d4d);filter:blur(20px);animation:spin 6s linear infinite}
+.legend3 .hero-emoji{filter:drop-shadow(0 0 18px #6366f1) drop-shadow(0 0 8px #fff)}
+.legend3 .aura{background:radial-gradient(circle,#fff 0 2%,transparent 3%) 0 0/22px 22px,radial-gradient(circle,#6366f1,#0b1026 70%,transparent 72%);opacity:.9}
+.mstars{position:absolute;left:0;right:0;top:-6px;text-align:center;font-size:18px;z-index:2}
+.hsk{display:inline-block;background:var(--violet);color:#fff;border-radius:8px;padding:0 6px;font-size:12px;vertical-align:middle}
+.item.rare{background:linear-gradient(180deg,#fff8e1,#fff)}
+.event{background:linear-gradient(135deg,#fff1d6,#ffe1e1);border:3px solid #ffcf70}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);text-align:left}
+.check .st{font-size:24px;flex:none}
+@media (max-width:420px){.big-hz{font-size:76px}.hero-stage{width:190px;height:190px}.hero-emoji{font-size:92px}.node{width:80%}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* =========================================================
+   ДАННЫЕ
+   ========================================================= */
+const UNITS = [
+  {id:'hi',   name:'Привет!',            icon:'👋'},
+  {id:'num',  name:'Числа 1–10',         icon:'🔢'},
+  {id:'pic',  name:'Иероглифы-картинки', icon:'🏞️'},
+  {id:'fam',  name:'Семья',              icon:'👨‍👩‍👧'},
+  {id:'ani',  name:'Животные',           icon:'🐼'},
+  {id:'col',  name:'Цвета',              icon:'🎨'},
+  {id:'food', name:'Еда',                icon:'🍜'},
+  {id:'body', name:'Тело и действия',    icon:'✋'},
+  {id:'talk', name:'Разговор',           icon:'💬'},
+  // Курс HSK 1–2 (официальный экзамен по китайскому)
+  {id:'num2',   name:'Счёт и возраст',  icon:'💯', hsk:1},
+  {id:'time',   name:'Время и дни',     icon:'⏰', hsk:1},
+  {id:'school', name:'Школа',           icon:'🏫', hsk:1},
+  {id:'quest',  name:'Вопросы',         icon:'❔', hsk:1},
+  {id:'verbs',  name:'Важные действия', icon:'🏃', hsk:1},
+  {id:'weather',name:'Погода',          icon:'🌦️', hsk:1},
+  {id:'places', name:'Город',           icon:'🏙️', hsk:1},
+  {id:'trans',  name:'Транспорт',       icon:'🚆', hsk:2},
+  {id:'clothes',name:'Одежда',          icon:'👕', hsk:2},
+  {id:'feel',   name:'Чувства и оценки',icon:'😄', hsk:2},
+  {id:'home',   name:'Вещи дома',       icon:'💻', hsk:2},
+  {id:'people', name:'Люди и профессии',icon:'🧑‍⚕️', hsk:2},
+];
+// Названия мест на карте: для героев GTA — районы Лос-Сантоса, для остальных — Китай
+const PLACES_CN = ['Пекин','Великая стена','Шанхай','Сиань','Чэнду','Гуйлинь','Гонконг','Харбин','Гора Хуаншань',
+  'Ханчжоу','Сучжоу','Нанкин','Циндао','Ухань','Чунцин','Гуанчжоу','Шэньчжэнь','Куньмин','Лхаса','Далянь','Остров Хайнань'];
+const PLACES_LS = ['Гроув-стрит','Вайнвуд','Веспуччи-Бич','Даунтаун','Дель-Перро','Сэнди-Шорс','Палето-Бэй','Порт Лос-Сантоса','Гора Чилиад',
+  'Аэропорт Лос-Сантоса','Пирс Дель-Перро','Обсерватория','Рокфорд-Хиллз','Мирор-Парк','Ла-Пуэрта','Ричман','Пустыня Гранд-Сенора','Аламо-Си','Каньон Рэтон','Форт Занкудо','Маунт-Гордо'];
+const BOSSES = [['👹','Они-Путаник'],['🐲','Дракон Забвения'],['🦖','Ти-Рекс Лени'],['🧌','Тролль Ошибок'],['🦑','Кракен Скуки'],['🤖','Мега-Бот'],['🐺','Волк Тишины'],['🧙','Колдун Тонов'],['👺','Император Забывания'],
+  ['🐉','Нефритовый Дракон'],['🦂','Скорпион Пустыни'],['🐍','Змей Путаницы'],['🦈','Акула Забвения'],['🕷️','Паук Лени'],['🦇','Нетопырь Тишины'],['🐊','Крокодил Ошибок'],['👻','Призрак Тонов'],['🧛','Вампир Времени'],['🦍','Горилла Скуки'],['🐗','Кабан Хаоса'],['🌋','Лорд Вулкана']];
+
+// h – иероглифы, p – пиньинь (слоги через пробел), r – русская транскрипция, tip – подсказка-история
+const WORDS = [
+  ['hi','你好','nǐ hǎo','ни хао','привет','👋','Самое главное слово! Говорят при встрече.'],
+  ['hi','谢谢','xiè xie','се се','спасибо','🙏','Второй слог короткий и лёгкий.'],
+  ['hi','再见','zài jiàn','цзай цзянь','пока','🚶','Дословно: «снова увидимся».'],
+  ['hi','我','wǒ','во','я','🙋',''],
+  ['hi','你','nǐ','ни','ты','👉','Слева маленький человечек 亻 — это «ты».'],
+  ['hi','好','hǎo','хао','хорошо','👍','Мама 女 + ребёнок 子 рядом = хорошо!'],
+  ['hi','是','shì','ши','да, это','✅',''],
+  ['hi','不','bù','бу','нет, не','❌',''],
+  ['num','一','yī','и','один','1️⃣','Одна палочка — один.'],
+  ['num','二','èr','эр','два','2️⃣','Две палочки — два.'],
+  ['num','三','sān','сань','три','3️⃣','Три палочки — три.'],
+  ['num','四','sì','сы','четыре','4️⃣','Окошко с занавесками.'],
+  ['num','五','wǔ','у','пять','5️⃣',''],
+  ['num','六','liù','лю','шесть','6️⃣','Домик с шапочкой и ножками.'],
+  ['num','七','qī','ци','семь','7️⃣','Похоже на перевёрнутую семёрку.'],
+  ['num','八','bā','ба','восемь','8️⃣','Две ножки разбежались.'],
+  ['num','九','jiǔ','цзю','девять','9️⃣',''],
+  ['num','十','shí','ши','десять','🔟','Крестик — это десять.'],
+  ['pic','人','rén','жэнь','человек','🧍','Человечек шагает на двух ножках.'],
+  ['pic','口','kǒu','коу','рот','👄','Открытый рот — квадратик.'],
+  ['pic','日','rì','жи','солнце, день','☀️','Солнышко в окошке.'],
+  ['pic','月','yuè','юэ','луна, месяц','🌙','Месяц-лодочка.'],
+  ['pic','山','shān','шань','гора','⛰️','Три вершины горы.'],
+  ['pic','水','shuǐ','шуй','вода','💧','Струйки воды стекают в стороны.'],
+  ['pic','火','huǒ','хо','огонь','🔥','Костёр, от которого летят искры.'],
+  ['pic','木','mù','му','дерево','🌳','Ствол, ветки и корни.'],
+  ['pic','大','dà','да','большой','🐘','Человек раскинул руки: «Вот какой большой!»'],
+  ['pic','小','xiǎo','сяо','маленький','🐜','Три маленькие крошки.'],
+  ['fam','爸爸','bà ba','баба','папа','👨','Второй слог короткий.'],
+  ['fam','妈妈','mā ma','мама','мама','👩','Слева 女 — женщина.'],
+  ['fam','哥哥','gē ge','гэгэ','старший брат','🧑',''],
+  ['fam','姐姐','jiě jie','цзецзе','старшая сестра','👱‍♀️',''],
+  ['fam','弟弟','dì di','диди','младший брат','👦',''],
+  ['fam','妹妹','mèi mei','мэймэй','младшая сестра','👧',''],
+  ['fam','家','jiā','цзя','дом, семья','🏠','Крыша 宀 над хрюшкой 豕 — это дом.'],
+  ['fam','朋友','péng you','пэнъю','друг','🤝','В 朋 две луны 月 рядом, как два друга.'],
+  ['ani','猫','māo','мао','кошка','🐱','Звучит как «мяу»!'],
+  ['ani','狗','gǒu','гоу','собака','🐶',''],
+  ['ani','鱼','yú','юй','рыба','🐟','Голова, чешуйки и хвостик.'],
+  ['ani','鸟','niǎo','няо','птица','🐦',''],
+  ['ani','马','mǎ','ма','лошадь','🐴','Грива и ножки лошадки.'],
+  ['ani','牛','niú','ню','корова','🐮','Сверху рожки.'],
+  ['ani','熊猫','xióng māo','сюнмао','панда','🐼','Дословно «медведь-кошка».'],
+  ['ani','老虎','lǎo hǔ','лаоху','тигр','🐯',''],
+  ['col','红色','hóng sè','хунсэ','красный','🔴','色 значит «цвет».'],
+  ['col','黄色','huáng sè','хуансэ','жёлтый','🟡',''],
+  ['col','蓝色','lán sè','ланьсэ','синий','🔵',''],
+  ['col','绿色','lǜ sè','люйсэ','зелёный','🟢',''],
+  ['col','白色','bái sè','байсэ','белый','⚪','白 — это 日 с лучиком сверху.'],
+  ['col','黑色','hēi sè','хэйсэ','чёрный','⚫',''],
+  ['food','米饭','mǐ fàn','мифань','рис','🍚','米 — рисинки разлетаются.'],
+  ['food','面条','miàn tiáo','мяньтяо','лапша','🍜',''],
+  ['food','苹果','píng guǒ','пингуо','яблоко','🍎','果 — фрукт на дереве 木.'],
+  ['food','水果','shuǐ guǒ','шуйго','фрукты','🍇','Дословно «водяной плод».'],
+  ['food','牛奶','niú nǎi','нюнай','молоко','🥛','«Коровье молоко»: 牛 — корова!'],
+  ['food','茶','chá','ча','чай','🍵','Отсюда наше слово «чай».'],
+  ['food','吃','chī','чи','есть, кушать','😋','Слева рот 口.'],
+  ['food','喝','hē','хэ','пить','🥤','И здесь слева рот 口.'],
+  ['body','头','tóu','тоу','голова','🙆',''],
+  ['body','手','shǒu','шоу','рука','✋','Ладошка с пальчиками.'],
+  ['body','眼睛','yǎn jing','яньцзин','глаза','👀',''],
+  ['body','耳朵','ěr duo','эрдо','уши','👂',''],
+  ['body','看','kàn','кань','смотреть','🔭','Рука 手 над глазом 目 — смотрю вдаль!'],
+  ['body','听','tīng','тин','слушать','🎧','Слева рот 口.'],
+  ['body','说','shuō','шо','говорить','💬',''],
+  ['body','爱','ài','ай','любить','❤️','В середине спряталось сердечко 心.'],
+  ['talk','我叫','wǒ jiào','во цзяо','меня зовут','📛','Скажи: 我叫 + своё имя!'],
+  ['talk','你好吗','nǐ hǎo ma','ни хао ма','как дела?','🤔','吗 в конце превращает фразу в вопрос.'],
+  ['talk','我很好','wǒ hěn hǎo','во хэнь хао','у меня всё хорошо','😊',''],
+  ['talk','我爱你','wǒ ài nǐ','во ай ни','я тебя люблю','💕','Скажи это маме или папе!'],
+  ['talk','对不起','duì bu qǐ','дуйбуци','извини','🙇',''],
+  ['talk','没关系','méi guān xi','мэй гуаньси','ничего страшного','🤗','Так отвечают на «извини».'],
+  ['talk','老师','lǎo shī','лаоши','учитель','🧑‍🏫',''],
+  ['talk','学生','xué sheng','сюэшэн','ученик','🎒',''],
+  // ---------- HSK 1–2 ----------
+  ['num2','零','líng','лин','ноль','0️⃣',''],
+  ['num2','两','liǎng','лян','два (при счёте)','✌️','Говорят «两个» — две штуки, а не «二个».'],
+  ['num2','百','bǎi','бай','сто','💯',''],
+  ['num2','岁','suì','суй','лет (возраст)','🎂','我八岁 — мне 8 лет.'],
+  ['num2','几','jǐ','цзи','сколько? (до 10)','❓','你几岁？— Сколько тебе лет?'],
+  ['num2','多少','duō shao','дошао','сколько?','🔢','Спрашивают о больших количествах и о цене.'],
+  ['num2','个','gè','гэ','штука (счётное слово)','📦','Ставится между числом и предметом: 三个苹果.'],
+  ['num2','只','zhī','чжи','штука (для животных)','🐾','两只猫 — две кошки.'],
+  ['time','今天','jīn tiān','цзиньтянь','сегодня','📅','天 — «день, небо».'],
+  ['time','明天','míng tiān','минтянь','завтра','⏭️','明 = солнце 日 + луна 月 — «светлый».'],
+  ['time','昨天','zuó tiān','цзотянь','вчера','⏮️',''],
+  ['time','现在','xiàn zài','сяньцзай','сейчас','⏰',''],
+  ['time','星期','xīng qī','синци','неделя','🗓️','星期一 — понедельник, 星期二 — вторник…'],
+  ['time','年','nián','нянь','год','🎆',''],
+  ['time','点','diǎn','дянь','час (о времени)','🕐','三点 — три часа.'],
+  ['time','早上','zǎo shang','цзаошан','утро','🌅',''],
+  ['time','晚上','wǎn shang','ваньшан','вечер','🌆',''],
+  ['school','学校','xué xiào','сюэсяо','школа','🏫',''],
+  ['school','书','shū','шу','книга','📕',''],
+  ['school','笔','bǐ','би','ручка','🖊️','Сверху бамбук ⺮ — раньше писали бамбуковой кистью.'],
+  ['school','字','zì','цзы','иероглиф','🀄','Под крышей 宀 ребёнок 子 учит иероглифы.'],
+  ['school','学习','xué xí','сюэси','учиться','📖',''],
+  ['school','写','xiě','се','писать','✍️',''],
+  ['school','读','dú','ду','читать','👓',''],
+  ['school','中文','zhōng wén','чжунвэнь','китайский язык','🇨🇳','中 — стрела в центре мишени: «середина».'],
+  ['school','同学','tóng xué','тунсюэ','одноклассник','🧑‍🤝‍🧑',''],
+  ['quest','什么','shén me','шэньмэ','что?','❔',''],
+  ['quest','谁','shéi','шэй','кто?','🕵️',''],
+  ['quest','哪儿','nǎr','нар','где? куда?','🧭','Третий тон! Не путай с 那儿 nàr — «там».'],
+  ['quest','怎么','zěn me','цзэньмэ','как?','🤷',''],
+  ['quest','为什么','wèi shén me','вэйшэньмэ','почему?','🧐',''],
+  ['quest','这','zhè','чжэ','это (рядом)','👇',''],
+  ['quest','那','nà','на','то (далеко)','👆',''],
+  ['verbs','去','qù','цюй','идти, ехать (туда)','➡️',''],
+  ['verbs','来','lái','лай','приходить (сюда)','⬅️',''],
+  ['verbs','有','yǒu','ю','иметь, есть','🫴','我有猫 — у меня есть кошка.'],
+  ['verbs','没有','méi yǒu','мэйю','нет, не иметь','🙅',''],
+  ['verbs','在','zài','цзай','находиться','📌','我在家 — я дома.'],
+  ['verbs','想','xiǎng','сян','хотеть, думать','💭','Внизу сердце 心 — думаю сердцем.'],
+  ['verbs','买','mǎi','май','покупать','🛒',''],
+  ['verbs','做','zuò','цзо','делать','🛠️',''],
+  ['verbs','睡觉','shuì jiào','шуйцзяо','спать','😴',''],
+  ['verbs','玩','wán','вань','играть','🎮',''],
+  ['weather','天气','tiān qì','тяньци','погода','🌤️',''],
+  ['weather','热','rè','жэ','жарко','🥵','Внизу четыре точки 灬 — это огонь.'],
+  ['weather','冷','lěng','лэн','холодно','🥶','Слева две капли льда 冫.'],
+  ['weather','下雨','xià yǔ','сяюй','идёт дождь','🌧️','雨 — капли за окном.'],
+  ['weather','雪','xuě','сюэ','снег','❄️','Сверху 雨 — снег тоже падает с неба.'],
+  ['weather','风','fēng','фэн','ветер','💨',''],
+  ['weather','太阳','tài yáng','тайян','солнце','🌞',''],
+  ['places','中国','zhōng guó','чжунго','Китай','🏯','«Срединное государство».'],
+  ['places','北京','běi jīng','бэйцзин','Пекин','🏙️','«Северная столица».'],
+  ['places','医院','yī yuàn','июань','больница','🏥',''],
+  ['places','商店','shāng diàn','шандянь','магазин','🏪',''],
+  ['places','饭店','fàn diàn','фаньдянь','ресторан','🍽️','饭 — еда, рис.'],
+  ['places','公园','gōng yuán','гунъюань','парк','🏞️',''],
+  ['places','这儿','zhèr','чжэр','здесь','📍',''],
+  ['places','那儿','nàr','нар','там','🗺️','Четвёртый тон! А 哪儿 nǎr — «где?».'],
+  ['trans','车','chē','чэ','машина','🚗','Вид сверху: колёса и ось.'],
+  ['trans','飞机','fēi jī','фэйцзи','самолёт','✈️','«Летающая машина».'],
+  ['trans','火车','huǒ chē','хочэ','поезд','🚆','«Огненная машина» — первые поезда были на угле.'],
+  ['trans','出租车','chū zū chē','чуцзучэ','такси','🚕',''],
+  ['trans','自行车','zì xíng chē','цзысинчэ','велосипед','🚲','«Сам-едущая машина».'],
+  ['trans','开','kāi','кай','водить; открывать','🔑',''],
+  ['trans','坐','zuò','цзо','сидеть; ехать на','💺','Два человечка 人 сидят на земле 土.'],
+  ['clothes','衣服','yī fu','ифу','одежда','👕',''],
+  ['clothes','鞋','xié','се','обувь','👟',''],
+  ['clothes','帽子','mào zi','маоцзы','шапка','🧢',''],
+  ['clothes','裤子','kù zi','куцзы','брюки','👖',''],
+  ['clothes','裙子','qún zi','цюньцзы','юбка','👗',''],
+  ['clothes','穿','chuān','чуань','надевать, носить','🧥',''],
+  ['feel','高兴','gāo xìng','гаосин','радостный','😄',''],
+  ['feel','喜欢','xǐ huan','сихуань','нравиться','🥰',''],
+  ['feel','漂亮','piào liang','пяолян','красивый','🌺',''],
+  ['feel','好吃','hǎo chī','хаочи','вкусный','🤤','Дословно «хорошо есть».'],
+  ['feel','多','duō','до','много','🍬',''],
+  ['feel','少','shǎo','шао','мало','🤏','小 «маленький» + чёрточка.'],
+  ['feel','很','hěn','хэнь','очень','💪',''],
+  ['feel','太','tài','тай','слишком','😲','大 «большой» + точка = слишком большой!'],
+  ['home','电脑','diàn nǎo','дяньнао','компьютер','💻','«Электрический мозг».'],
+  ['home','手机','shǒu jī','шоуцзи','телефон','📱','«Ручная машинка».'],
+  ['home','电视','diàn shì','дяньши','телевизор','📺',''],
+  ['home','杯子','bēi zi','бэйцзы','чашка','☕',''],
+  ['home','椅子','yǐ zi','ицзы','стул','🪑',''],
+  ['home','东西','dōng xi','дунси','вещь','🎁','Дословно «восток-запад».'],
+  ['home','钱','qián','цянь','деньги','💰','Слева 钅 — металл: монеты.'],
+  ['home','门','mén','мэнь','дверь','🚪','Похоже на двустворчатую дверь.'],
+  ['people','儿子','ér zi','эрцзы','сын','🧒',''],
+  ['people','女儿','nǚ ér','нюйэр','дочь','🎀',''],
+  ['people','医生','yī shēng','ишэн','врач','🧑‍⚕️',''],
+  ['people','先生','xiān sheng','сяньшэн','господин','🎩',''],
+  ['people','小姐','xiǎo jie','сяоцзе','девушка, мисс','💁‍♀️',''],
+  ['people','名字','míng zi','минцзы','имя','🏷️',''],
+  // ---------- Праздничные слова (открываются во время праздников) ----------
+  ['ev_midautumn','中秋节','zhōng qiū jié','чжунцюцзе','Праздник середины осени','🎑','Самая круглая луна в году!'],
+  ['ev_midautumn','月饼','yuè bing','юэбин','лунный пряник','🥮','Круглый, как полная луна.'],
+  ['ev_midautumn','月亮','yuè liang','юэлян','луна','🌕',''],
+  ['ev_midautumn','兔子','tù zi','туцзы','кролик','🐇','По легенде на луне живёт нефритовый кролик.'],
+  ['ev_midautumn','灯笼','dēng long','дэнлун','фонарик','🏮',''],
+  ['ev_midautumn','家人','jiā rén','цзяжэнь','родные','👨‍👩‍👧‍👦','В праздник вся семья собирается вместе.'],
+  ['ev_newyear','春节','chūn jié','чуньцзе','Праздник весны (Новый год)','🎊',''],
+  ['ev_newyear','新年快乐','xīn nián kuài lè','синьнянь куайлэ','С Новым годом!','🎉',''],
+  ['ev_newyear','红包','hóng bāo','хунбао','красный конверт с деньгами','🧧','Его дарят детям на Новый год!'],
+  ['ev_newyear','饺子','jiǎo zi','цзяоцзы','пельмени','🥟',''],
+  ['ev_newyear','鞭炮','biān pào','бяньпао','хлопушки','🧨','Громкий шум отпугивает чудовище Нянь.'],
+  ['ev_newyear','舞龙','wǔ lóng','улун','танец дракона','🐉',''],
+  ['ev_dragonboat','端午节','duān wǔ jié','дуаньуцзе','Праздник драконьих лодок','🐲',''],
+  ['ev_dragonboat','龙舟','lóng zhōu','лунчжоу','лодка-дракон','🛶',''],
+  ['ev_dragonboat','粽子','zòng zi','цзунцзы','рис в листьях бамбука','🍙',''],
+  ['ev_dragonboat','划船','huá chuán','хуачуань','грести','🚣',''],
+  ['ev_dragonboat','比赛','bǐ sài','бисай','соревнование','🏁',''],
+].map(([u,h,p,r,ru,e,tip],i)=>({id:'w'+i,u,h,p,r,ru,e,tip,ev:u.startsWith('ev_')}));
+const COURSE = WORDS.filter(w=>!w.ev);
+const WBY = Object.fromEntries(WORDS.map(w=>[w.id,w]));
+const WBH = Object.fromEntries(WORDS.map(w=>[w.h,w]));
+
+// Фразы для сборки из плиток. Появляются, когда все слова фразы уже изучены.
+const EXTRA = {吗:'ma',也:'yě',叫:'jiào'};
+const SENTENCES = [
+  ['你|好','Привет!'],['谢谢|你','Спасибо тебе'],['我|不|好','Мне нехорошо'],['你|是|我','Ты — это я?! 🤪'],
+  ['大|山','Большая гора'],['小|人','Маленький человек'],['大|火','Большой огонь'],
+  ['妈妈|好','Здравствуй, мама'],['爸爸|好','Здравствуй, папа'],['我|是|哥哥','Я старший брат'],['我|是|弟弟','Я младший брат'],
+  ['你|是|姐姐','Ты старшая сестра'],['你|是|我|朋友','Ты мой друг'],
+  ['大|猫','Большая кошка'],['小|狗','Маленькая собака'],['大|熊猫','Большая панда'],
+  ['我|吃|苹果','Я ем яблоко'],['我|喝|茶','Я пью чай'],['我|不|喝|牛奶','Я не пью молоко'],['妈妈|吃|米饭','Мама ест рис'],
+  ['爸爸|喝|茶','Папа пьёт чай'],['猫|吃|鱼','Кошка ест рыбу'],['狗|喝|水','Собака пьёт воду'],['你|吃|面条|吗','Ты ешь лапшу?'],
+  ['我|爱|妈妈','Я люблю маму'],['我|爱|爸爸','Я люблю папу'],['我|爱|熊猫','Я люблю панд'],['我|看|猫','Я смотрю на кошку'],
+  ['你|爱|猫|吗','Ты любишь кошек?'],['我|爱|我|家','Я люблю свою семью'],['我|也|爱|你','Я тоже тебя люблю'],
+  ['我|是|学生','Я ученик'],['你|是|老师','Ты учитель'],['我|不|是|老师','Я не учитель'],['老师|好','Здравствуйте, учитель!'],
+  // HSK 1–2
+  ['你|几|岁','Сколько тебе лет?'],['我|八|岁','Мне восемь лет'],['我|有|两|只|猫','У меня две кошки'],['我|有|一|个|哥哥','У меня есть старший брат'],
+  ['今天|很|热','Сегодня очень жарко'],['今天|很|冷','Сегодня очень холодно'],['明天|下雨','Завтра будет дождь'],['现在|几|点','Который час?'],
+  ['我|去|学校','Я иду в школу'],['妈妈|去|商店','Мама идёт в магазин'],['爸爸|开|车','Папа ведёт машину'],['我|坐|飞机|去|北京','Я лечу на самолёте в Пекин'],
+  ['你|叫|什么|名字','Как тебя зовут?'],['这|是|什么','Что это?'],['那|是|谁','Кто это там?'],['你|去|哪儿','Куда ты идёшь?'],
+  ['我|喜欢|猫','Мне нравятся кошки'],['我|喜欢|学习|中文','Мне нравится учить китайский'],['我|想|喝|茶','Я хочу пить чай'],['我|想|买|书','Я хочу купить книгу'],
+  ['我|在|家','Я дома'],['老师|在|学校','Учитель в школе'],['我|很|高兴','Я очень рад'],['米饭|很|好吃','Рис очень вкусный'],
+  ['我|晚上|睡觉','Я сплю вечером'],['你|有|手机|吗','У тебя есть телефон?'],['我|没有|钱','У меня нет денег'],['我|读|书','Я читаю книгу'],
+  ['我|写|字','Я пишу иероглифы'],['爸爸|是|医生','Папа — врач'],['我|穿|衣服','Я одеваюсь'],['我|爱|玩','Я люблю играть'],
+].map(([t,ru],i)=>({id:'s'+i,t:t.split('|'),ru}));
+
+// Истории-диалоги. n – собеседник, h – герой, q – вопрос на понимание [вопрос, варианты, индекс верного]
+const STORIES = [
+  {id:'st1',u:0,title:'Привет, панда!',npc:'🐼',nn:'Панда Бао',lines:[
+    ['n','你好！','nǐ hǎo!','Привет!'],['h','你好！','nǐ hǎo!','Привет!'],['n','我是熊猫。','wǒ shì xióngmāo.','Я панда.'],
+    ['q','Кто встретился герою?',['🐼 Панда','🐱 Кошка','🐯 Тигр'],0],
+    ['h','我是{name}！','wǒ shì {name}!','Я — {name}!'],['n','好！再见！','hǎo! zàijiàn!','Хорошо! Пока!'],
+    ['q','Что панда сказала в конце?',['Пока!','Спасибо!','Привет!'],0],['h','再见！','zàijiàn!','Пока!']]},
+  {id:'st2',u:1,title:'Считаем с учителем',npc:'🧑‍🏫',nn:'Учитель Ван',lines:[
+    ['n','你好！一、二、三！','nǐ hǎo! yī, èr, sān!','Привет! Раз, два, три!'],['h','四、五、六！','sì, wǔ, liù!','Четыре, пять, шесть!'],
+    ['n','七、八、九……','qī, bā, jiǔ…','Семь, восемь, девять…'],['q','Какое число следующее?',['十 — десять','二 — два','五 — пять'],0],
+    ['h','十！','shí!','Десять!'],['n','好！谢谢！','hǎo! xièxie!','Отлично! Спасибо!'],['h','不谢！再见！','bú xiè! zàijiàn!','Не за что! Пока!']]},
+  {id:'st3',u:3,title:'Я люблю маму',npc:'👩',nn:'Мама',lines:[
+    ['h','妈妈好！','māma hǎo!','Привет, мама!'],['n','你好！你爱爸爸吗？','nǐ hǎo! nǐ ài bàba ma?','Привет! Ты любишь папу?'],
+    ['q','О чём спросила мама?',['Любишь ли ты папу','Где папа','Как дела'],0],
+    ['h','我爱爸爸！我爱妈妈！','wǒ ài bàba! wǒ ài māma!','Я люблю папу! Я люблю маму!'],['n','我爱你！','wǒ ài nǐ!','Я люблю тебя!'],
+    ['h','我也爱你！','wǒ yě ài nǐ!','Я тоже тебя люблю!']]},
+  {id:'st4',u:4,title:'Котик в гостях',npc:'🐱',nn:'Котик Мао',lines:[
+    ['n','你好！我是猫。','nǐ hǎo! wǒ shì māo.','Привет! Я кот.'],['h','你好！你吃鱼吗？','nǐ hǎo! nǐ chī yú ma?','Привет! Ты ешь рыбу?'],
+    ['n','吃！我爱鱼！','chī! wǒ ài yú!','Ем! Я люблю рыбу!'],['q','Что любит котик?',['🐟 Рыбу','🍎 Яблоки','🍵 Чай'],0],
+    ['h','我喝茶。你喝牛奶吗？','wǒ hē chá. nǐ hē niúnǎi ma?','Я пью чай. А ты пьёшь молоко?'],['n','不！我喝水。','bù! wǒ hē shuǐ.','Нет! Я пью воду.'],
+    ['q','Что пьёт котик?',['💧 Воду','🥛 Молоко','🍵 Чай'],0]]},
+  {id:'st5',u:6,title:'Обед в Пекине',npc:'🧑‍🏫',nn:'Учитель Ван',lines:[
+    ['n','你吃米饭吗？','nǐ chī mǐfàn ma?','Ты ешь рис?'],['h','不，我吃面条。','bù, wǒ chī miàntiáo.','Нет, я ем лапшу.'],
+    ['q','Что ест герой?',['🍜 Лапшу','🍚 Рис','🍎 Яблоко'],0],['n','你喝茶吗？','nǐ hē chá ma?','Ты пьёшь чай?'],
+    ['h','我喝牛奶！','wǒ hē niúnǎi!','Я пью молоко!'],['n','好！','hǎo!','Хорошо!']]},
+  {id:'st6',u:8,title:'Новый ученик',npc:'🧑‍🏫',nn:'Учитель Ван',lines:[
+    ['n','你好！你叫什么？','nǐ hǎo! nǐ jiào shénme?','Привет! Как тебя зовут?'],['h','我叫{name}。','wǒ jiào {name}.','Меня зовут {name}.'],
+    ['n','你是学生吗？','nǐ shì xuésheng ma?','Ты ученик?'],['q','О чём спросил учитель?',['Ученик ли ты','Сколько тебе лет','Где твой дом'],0],
+    ['h','是！我是学生。你好吗？','shì! wǒ shì xuésheng. nǐ hǎo ma?','Да! Я ученик. Как ваши дела?'],['n','我很好，谢谢！','wǒ hěn hǎo, xièxie!','У меня всё хорошо, спасибо!']]},
+  {id:'st7',u:11,title:'Урок в школе',npc:'🧑‍🏫',nn:'Учитель Ван',lines:[
+    ['n','你好！你喜欢学习中文吗？','nǐ hǎo! nǐ xǐhuan xuéxí zhōngwén ma?','Привет! Тебе нравится учить китайский?'],['h','我很喜欢！','wǒ hěn xǐhuan!','Очень нравится!'],
+    ['q','О чём спросил учитель?',['Нравится ли учить китайский','Где твоя книга','Сколько тебе лет'],0],
+    ['n','你有书吗？','nǐ yǒu shū ma?','У тебя есть книга?'],['h','有！我也有笔。','yǒu! wǒ yě yǒu bǐ.','Есть! И ручка тоже есть.'],
+    ['q','Что есть у героя?',['📕 Книга и 🖊️ ручка','💻 Компьютер','🚗 Машина'],0],
+    ['n','很好！我们写字吧。','hěn hǎo! wǒmen xiě zì ba.','Отлично! Давайте писать иероглифы.']]},
+  {id:'st8',u:14,title:'Какая погода?',npc:'🐼',nn:'Панда Бао',lines:[
+    ['n','今天天气怎么样？','jīntiān tiānqì zěnmeyàng?','Какая сегодня погода?'],['h','今天很冷，下雪了！','jīntiān hěn lěng, xià xuě le!','Сегодня очень холодно, пошёл снег!'],
+    ['q','Какая погода сегодня?',['🥶 Холодно, снег','🥵 Жарко','🌧️ Дождь'],0],
+    ['n','明天呢？','míngtiān ne?','А завтра?'],['h','明天有太阳！','míngtiān yǒu tàiyáng!','Завтра будет солнце!'],
+    ['n','太好了！我们去公园玩！','tài hǎo le! wǒmen qù gōngyuán wán!','Отлично! Пойдём гулять в парк!'],
+    ['q','Куда они пойдут?',['🏞️ В парк','🏥 В больницу','🏫 В школу'],0]]},
+  {id:'st9',u:13,title:'В магазине',npc:'🧑‍💼',nn:'Продавец',lines:[
+    ['h','你好！我想买苹果。','nǐ hǎo! wǒ xiǎng mǎi píngguǒ.','Здравствуйте! Я хочу купить яблоки.'],['n','你要几个？','nǐ yào jǐ gè?','Сколько штук тебе нужно?'],
+    ['h','三个！多少钱？','sān gè! duōshao qián?','Три! Сколько стоит?'],['q','Сколько яблок хочет герой?',['3','8','10'],0],
+    ['n','十块钱。','shí kuài qián.','Десять юаней.'],['h','给你。谢谢！','gěi nǐ. xièxie!','Вот, держите. Спасибо!'],
+    ['q','Сколько стоят яблоки?',['10 юаней','3 юаня','100 юаней'],0],['n','不客气！再见！','bú kèqi! zàijiàn!','Пожалуйста! До свидания!']]},
+];
+
+const HEROES = [
+  {id:'franklin',gta:true,name:'Франклин',style:'GTA 5',c:'#2fbf4a',st:['👦🏾','🧑🏾','🧑🏾‍🔧','🧑🏾‍💼','🤴🏾'],ti:['Новичок Лос-Сантоса','Уличный гонщик','Мастер тачек','Бизнесмен','Король Лос-Сантоса']},
+  {id:'michael', gta:true,name:'Майкл',style:'GTA 5',c:'#2f7bf0',st:['👦🏻','👨🏻','🕵🏻‍♂️','🧑🏻‍💼','🤵🏻'],ti:['Новичок Лос-Сантоса','Житель Вайнвуда','Детектив','Кинопродюсер','Легенда Вайнвуда']},
+  {id:'trevor',  gta:true,name:'Тревор',style:'GTA 5',c:'#ff8a1f',st:['👦🏼','🧔🏼','👨🏼‍✈️','🧔🏼‍♂️','🦸🏼‍♂️'],ti:['Новичок Лос-Сантоса','Бородач из пустыни','Пилот','Босс аэродрома','Безумный гений']},
+  {id:'builder',name:'Кубо-строитель',style:'в стиле Minecraft',c:'#3fae4a',st:['🧒','👷','🧑‍🔧','🦸','🧙‍♂️'],ti:['Новичок','Шахтёр','Мастер-крафтер','Герой кубов','Архимаг кубов']},
+  {id:'dragon', name:'Дракончик',style:'как в драконьих играх',c:'#e5533d',st:['🥚','🦎','🦕','🐲','🐉'],ti:['Яйцо','Ящерка','Юный дракон','Огненный дракон','Великий дракон']},
+  {id:'beast',  name:'Карманный монстрик',style:'в стиле Pokémon',c:'#f2b705',st:['🐭','🐹','🦊','🐯','🦁'],ti:['Малыш','Шустрик','Хитрец','Громила','Король зверей']},
+  {id:'robot',  name:'Робо-боец',style:'в стиле Brawl Stars',c:'#3b82f6',st:['🔩','🤖','👾','🦾','🛸'],ti:['Винтик','Робот','Кибер-боец','Мега-робот','Робо-титан']},
+  {id:'ninja',  name:'Ниндзя',style:'в стиле Ninjago',c:'#6d28d9',st:['🧒','🥷','🥷','🥷','🥷'],ti:['Ученик','Ниндзя','Мастер тени','Сэнсэй','Легенда']},
+  {id:'fairy',  name:'Волшебница',style:'как в сказочных играх',c:'#d946ef',st:['👧','🧚','🧝‍♀️','🧙‍♀️','👸'],ti:['Ученица','Фея','Эльфийка','Чародейка','Королева магии']},
+  // Секретные герои — открываются за уровни (прогресс общий, меняется только герой)
+  {id:'panda',  lock:25,name:'Панда-мастер',style:'секретный герой',c:'#10b981',st:['🐼','🐼','🐼','🐼','🐼'],ti:['Малыш-панда','Ученик кунг-фу','Мастер бамбука','Воин долины','Великий мастер']},
+  {id:'monkey', lock:30,name:'Царь обезьян',style:'секретный герой',c:'#f59e0b',st:['🐵','🐒','🐒','🦍','🦍'],ti:['Обезьянка','Ловкач','Царь горы','Великий мудрец','Царь обезьян']},
+  {id:'taiko',  lock:35,name:'Тайконавт',style:'секретный герой',c:'#0ea5e9',st:['🧒','🧑‍🚀','🧑‍🚀','🧑‍🚀','🌠'],ti:['Мечтатель','Курсант','Пилот','Командир','Звёздный странник']},
+  {id:'jade',   lock:45,name:'Нефритовый дракон',style:'секретный герой',c:'#22c55e',st:['🐍','🦎','🐊','🐲','🐉'],ti:['Змейка','Ящер','Речной дракон','Небесный дракон','Нефритовый император']},
+];
+// Эволюция: 5 обычных стадий + 3 легендарные (25, 35, 50 уровни)
+const STAGE_LV = [1,3,6,10,15,25,35,50];
+const LEGEND = [{n:'Легендарный',c:'legend1'},{n:'Мифический',c:'legend2'},{n:'Космический',c:'legend3'}];
+const stageEmoji=(h,st)=>h.st[Math.min(st,4)];
+const stageTitle=(h,st)=>st<5?h.ti[st]:`${LEGEND[st-5].n} ${h.ti[4]} ${'★'.repeat(st-4)}`;
+const heroLocked=h=>h.lock&&levelInfo().level<h.lock;
+const ITEMS = [
+  {lv:2,e:'🗡️',n:'Меч'},{lv:4,e:'🛡️',n:'Щит'},{lv:5,e:'👟',n:'Кроссовки-скороходы'},{lv:7,e:'🎒',n:'Рюкзак знаний'},
+  {lv:8,e:'🪽',n:'Крылья'},{lv:9,e:'🔮',n:'Шар мудрости'},{lv:11,e:'👑',n:'Корона'},{lv:12,e:'⚡',n:'Молния'},
+  {lv:13,e:'🌈',n:'Радужный плащ'},{lv:14,e:'💎',n:'Кристалл Китая'},{lv:16,e:'🏮',n:'Волшебный фонарик'},
+  {lv:18,e:'🐲',n:'Питомец-дракон'},{lv:20,e:'🌟',n:'Звезда героя'},
+  {lv:22,e:'🎖️',n:'Орден отваги'},{lv:24,e:'🧿',n:'Амулет удачи'},{lv:26,e:'🪄',n:'Волшебная палочка'},{lv:28,e:'🛸',n:'Дрон-помощник'},
+  {lv:30,e:'🏆',n:'Кубок чемпиона'},{lv:33,e:'🦅',n:'Орёл-разведчик'},{lv:36,e:'🌙',n:'Лунный меч'},{lv:40,e:'🔱',n:'Трезубец'},
+  {lv:45,e:'🌠',n:'Падающая звезда'},{lv:50,e:'🪐',n:'Планета героя'},
+];
+// После 50-го уровня — «звёзды мастерства» каждые 5 уровней, без конца
+const masteryStars=l=>l>50?Math.floor((l-50)/5):0;
+// Магазин: покупается за юани 💴
+const SHOP = [
+  {id:'freeze',cat:'use',e:'❄️',n:'Заморозка серии',d:'Спасёт серию, если пропустишь день. Можно хранить 2.',price:40},
+  {id:'pet_cat',cat:'pet',e:'🐱',n:'Котик',price:60},{id:'pet_dog',cat:'pet',e:'🐶',n:'Пёсик',price:60},
+  {id:'pet_parrot',cat:'pet',e:'🦜',n:'Попугай',price:70},{id:'pet_panda',cat:'pet',e:'🐼',n:'Панда',price:90},
+  {id:'pet_unicorn',cat:'pet',e:'🦄',n:'Единорог',price:120},{id:'pet_car',cat:'pet',e:'🏎️',n:'Спорткар',price:150},
+  {id:'pet_dragon',cat:'pet',e:'🐲',n:'Дракоша',price:160},{id:'pet_heli',cat:'pet',e:'🚁',n:'Вертолёт',price:200},
+  {id:'bg_temple',cat:'bg',e:'🏯',n:'Китайский храм',price:100,css:'linear-gradient(180deg,#ffd9b0,#ff9a76)',d2:'🏮'},
+  {id:'bg_sakura',cat:'bg',e:'🌸',n:'Сакура',price:100,css:'linear-gradient(180deg,#ffe4f1,#ffc2dc)',d2:'🌸'},
+  {id:'bg_beach',cat:'bg',e:'🌴',n:'Пляж Веспуччи',price:120,css:'linear-gradient(180deg,#8fd3ff 0 62%,#ffe29a 62%)',d2:'☀️'},
+  {id:'bg_city',cat:'bg',e:'🌃',n:'Ночной город',price:140,css:'linear-gradient(180deg,#2e1065,#7c3aed)',d2:'🌙'},
+  {id:'bg_space',cat:'bg',e:'🪐',n:'Космос',price:160,css:'radial-gradient(circle at 30% 20%,#6d28d9,#0b1026)',d2:'⭐'},
+  {id:'bg_volcano',cat:'bg',e:'🌋',n:'Вулкан',price:160,css:'linear-gradient(180deg,#fde68a,#f97316)',d2:'🔥'},
+  {id:'aura_gold',cat:'aura',e:'✨',n:'Золотая аура',price:90,c:'#ffc233'},
+  {id:'aura_ice',cat:'aura',e:'❄️',n:'Ледяная аура',price:90,c:'#38bdf8'},
+  {id:'aura_fire',cat:'aura',e:'🔥',n:'Огненная аура',price:110,c:'#ff3d00'},
+  {id:'aura_rainbow',cat:'aura',e:'🌈',n:'Радужная аура',price:180,c:'#a855f7'},
+  // Легендарные товары — цели подороже
+  {id:'pet_peacock',cat:'pet',e:'🦚',n:'Павлин',price:250,rare:1},{id:'pet_tiger',cat:'pet',e:'🐅',n:'Тигр',price:320,rare:1},
+  {id:'pet_yacht',cat:'pet',e:'🛥️',n:'Яхта',price:400,rare:1},{id:'pet_rocket',cat:'pet',e:'🚀',n:'Ракета',price:600,rare:1},
+  {id:'pet_golddragon',cat:'pet',e:'🐉',n:'Золотой дракон',price:800,rare:1},
+  {id:'bg_wall',cat:'bg',e:'🧱',n:'Великая стена',price:300,css:'linear-gradient(180deg,#bfe3ff 0 55%,#c8a27a 55%)',d2:'⛰️',rare:1},
+  {id:'bg_palace',cat:'bg',e:'🏯',n:'Запретный город',price:380,css:'linear-gradient(180deg,#ffe7a3,#d9480f)',d2:'🐉',rare:1},
+  {id:'bg_moon',cat:'bg',e:'🌕',n:'Лунная база',price:500,css:'radial-gradient(circle at 75% 25%,#fff7c2 0 10%,#1e1b4b 11%,#0b1026)',d2:'🛰️',rare:1},
+  {id:'aura_jade',cat:'aura',e:'💚',n:'Нефритовая аура',price:260,c:'#10b981',rare:1},
+  {id:'aura_cosmic',cat:'aura',e:'🌌',n:'Космическая аура',price:450,c:'#6366f1',rare:1},
+  // Награды праздников — купить нельзя, только заработать на празднике
+  {id:'pet_rabbit',cat:'pet',e:'🐇',n:'Лунный кролик',ev:'midautumn'},
+  {id:'bg_fullmoon',cat:'bg',e:'🥮',n:'Полнолуние',ev:'midautumn',css:'radial-gradient(circle at 70% 28%,#fff3b0 0 14%,#312e81 15%,#1e1b4b)',d2:'🏮'},
+  {id:'pet_lion',cat:'pet',e:'🦁',n:'Новогодний лев',ev:'newyear'},
+  {id:'bg_fireworks',cat:'bg',e:'🎆',n:'Фейерверк',ev:'newyear',css:'radial-gradient(circle at 30% 30%,#f43f5e 0 6%,transparent 7%),radial-gradient(circle at 70% 20%,#fbbf24 0 5%,transparent 6%),linear-gradient(180deg,#1e1b4b,#7f1d1d)',d2:'🧧'},
+  {id:'pet_boat',cat:'pet',e:'🛶',n:'Лодка-дракон',ev:'dragonboat'},
+  {id:'bg_river',cat:'bg',e:'🏞️',n:'Река праздника',ev:'dragonboat',css:'linear-gradient(180deg,#a7f3d0 0 50%,#38bdf8 50%)',d2:'🍙'},
+];
+// Праздники: появляются в свои даты, дают слова и уникальные награды
+const EVENTS = [
+  {id:'midautumn',name:'Праздник Середины осени',e:'🥮',from:'09-01',to:'10-20',rewards:['pet_rabbit','bg_fullmoon']},
+  {id:'newyear',  name:'Китайский Новый год',e:'🧧',from:'01-10',to:'02-28',rewards:['pet_lion','bg_fireworks']},
+  {id:'dragonboat',name:'Праздник драконьих лодок',e:'🛶',from:'05-25',to:'06-30',rewards:['pet_boat','bg_river']},
+];
+function activeEvent(){ const md=today().slice(5); return EVENTS.find(e=>md>=e.from&&md<=e.to)||null; }
+const eventWords=ev=>WORDS.filter(w=>w.u==='ev_'+ev.id);
+const SHOP_CATS = {use:'Полезное',pet:'Питомцы',bg:'Фоны',aura:'Ауры'};
+const MONSTERS = [['👾','Забывака'],['👻','Путаник'],['👹','Лентяй-Они'],['🐙','Осьминог Ошибок'],['🦂','Скорпион Скуки'],['🧟','Зомби-Лень']];
+const TONE_SETS = [
+  [['妈','mā','мама'],['麻','má','конопля'],['马','mǎ','лошадь'],['骂','mà','ругать']],
+  [['八','bā','восемь'],['拔','bá','тянуть'],['把','bǎ','держать'],['爸','bà','папа']],
+  [['衣','yī','одежда'],['姨','yí','тётя'],['椅','yǐ','стул'],['意','yì','смысл']],
+  [['汤','tāng','суп'],['糖','táng','сахар'],['躺','tǎng','лежать'],['烫','tàng','горячий']],
+  [['书','shū','книга'],['熟','shú','спелый'],['鼠','shǔ','мышь'],['树','shù','дерево']],
+];
+const TONE_INFO = [
+  {t:1,mark:'ˉ',name:'Ровный',how:'Высоко и ровно, как самолёт ✈️'},
+  {t:2,mark:'ˊ',name:'Вверх',how:'Как удивлённое «А?» ↗'},
+  {t:3,mark:'ˇ',name:'Ямка',how:'Вниз и вверх, как «Ну-у?» ✓'},
+  {t:4,mark:'ˋ',name:'Вниз',how:'Резко вниз, как «Стоп!» ↘'},
+];
+const INTERVALS = [0,1,2,4,7,15]; // дни до повторения для каждой «коробки» (метод Лейтнера)
+const PRAISE = ['Супер!','Молодец!','Ура!','Отлично!','Вот это да!','太棒了! tài bàng le — «Круто!»','很好! hěn hǎo — «Очень хорошо!»'];
+const SUPPORT = ['Почти! Ошибки помогают учиться 💪','Ничего страшного! Запомним вместе','加油! jiā yóu — «Давай, у тебя получится!»'];
+
+// Задания дня: «lesson» есть всегда, плюс 2 случайных
+const QUESTS = {
+  lesson:{e:'⚔️',n:'Пройди урок',goal:1},
+  combo:{e:'🔥',n:'Ответь правильно 5 раз подряд',goal:5},
+  write:{e:'✍️',n:'Напиши 3 иероглифа',goal:3},
+  tone:{e:'🎵',n:'Угадай 5 тонов',goal:5},
+  speak:{e:'🎤',n:'Скажи вслух 3 слова',goal:3,ok:()=>speechOK()},
+  build:{e:'🧩',n:'Собери 2 фразы',goal:2,ok:()=>readySentences().length>0},
+  story:{e:'📖',n:'Прочитай историю',goal:1,ok:()=>openStories().length>0},
+  xp:{e:'✨',n:'Набери 100 опыта',goal:100},
+};
+
+const ACH = [
+  {id:'first',e:'🎉',n:'Первый урок',d:'Пройди первый урок',t:s=>s.sessions>=1},
+  {id:'st3',e:'🔥',n:'Три дня подряд',d:'Занимайся 3 дня подряд',t:s=>s.bestStreak>=3},
+  {id:'st7',e:'🌋',n:'Неделя силы',d:'7 дней подряд',t:s=>s.bestStreak>=7},
+  {id:'st30',e:'🏯',n:'Великая стена',d:'30 дней подряд',t:s=>s.bestStreak>=30},
+  {id:'w10',e:'📗',n:'10 слов',d:'Выучи 10 слов',t:s=>learnedCount()>=10},
+  {id:'w30',e:'📘',n:'30 слов',d:'Выучи 30 слов',t:s=>learnedCount()>=30},
+  {id:'w60',e:'📚',n:'60 слов',d:'Выучи 60 слов',t:s=>learnedCount()>=60},
+  {id:'num',e:'🧮',n:'Мастер счёта',d:'Выучи все числа',t:s=>WORDS.filter(w=>w.u==='num').every(w=>(s.words[w.id]||{}).box>=1)},
+  {id:'perfect',e:'💯',n:'Без ошибок',d:'Урок без единой ошибки',t:s=>s.perfect>=1},
+  {id:'combo10',e:'⚡',n:'Комбо-мастер',d:'10 правильных ответов подряд',t:s=>s.maxCombo>=10},
+  {id:'boss1',e:'👹',n:'Победитель босса',d:'Победи первого босса',t:s=>Object.keys(s.bosses).length>=1},
+  {id:'boss5',e:'🗡️',n:'Гроза боссов',d:'Победи 5 боссов',t:s=>Object.keys(s.bosses).length>=5},
+  {id:'story3',e:'📖',n:'Книжный червь',d:'Прочитай 3 истории',t:s=>Object.keys(s.stories).length>=3},
+  {id:'speak20',e:'🎤',n:'Говорун',d:'Скажи вслух 20 слов',t:s=>s.speakCount>=20},
+  {id:'build10',e:'🧩',n:'Строитель фраз',d:'Собери 10 фраз',t:s=>s.buildCount>=10},
+  {id:'tones',e:'👂',n:'Слух дракона',d:'Угадай 20 тонов',t:s=>s.toneCorrect>=20},
+  {id:'write',e:'🖌️',n:'Каллиграф',d:'Напиши 20 иероглифов',t:s=>s.writeCount>=20},
+  {id:'shop',e:'🛍️',n:'Первая покупка',d:'Купи что-нибудь в магазине',t:s=>s.owned.length>=1},
+  {id:'lv5',e:'⭐',n:'Уровень 5',d:'Прокачай героя до 5 уровня',t:s=>levelInfo().level>=5},
+  {id:'lv10',e:'🌟',n:'Уровень 10',d:'Прокачай героя до 10 уровня',t:s=>levelInfo().level>=10},
+  {id:'master',e:'🐉',n:'Знаток',d:'10 слов в «золотой коробке»',t:s=>Object.values(s.words).filter(r=>r.box>=4).length>=10},
+  {id:'hsk',e:'🎓',n:'Путь HSK',d:'Открой первую тему HSK',t:s=>openUnits()>9},
+  {id:'hskboss',e:'🥋',n:'Боец HSK',d:'Победи босса темы HSK',t:s=>UNITS.some(u=>u.hsk&&s.bosses[u.id])},
+  {id:'w100',e:'📕',n:'100 слов',d:'Выучи 100 слов',t:s=>learnedCount()>=100},
+  {id:'w150',e:'🏛️',n:'150 слов',d:'Выучи 150 слов',t:s=>learnedCount()>=150},
+  {id:'lv25',e:'💫',n:'Легенда',d:'Уровень 25 — легендарная эволюция',t:s=>levelInfo().level>=25},
+  {id:'lv35',e:'🔮',n:'Миф',d:'Уровень 35 — мифическая эволюция',t:s=>levelInfo().level>=35},
+  {id:'lv50',e:'🪐',n:'Космос',d:'Уровень 50 — космическая эволюция',t:s=>levelInfo().level>=50},
+  {id:'secret',e:'🗝️',n:'Тайный герой',d:'Выбери секретного героя',t:s=>!!HEROES.find(h=>h.id===s.heroId&&h.lock)},
+  {id:'step4',e:'🧗',n:'Вершина',d:'Дойди до 4-й ступени сложности',t:s=>autoStep()>=4},
+  {id:'tonemaster',e:'🎼',n:'Мастер тонов',d:'Угадай тон 30 знакомых слов',t:s=>(s.toneWord||0)>=30},
+  {id:'memory',e:'🧠',n:'По памяти',d:'Напиши 10 иероглифов без подсказки',t:s=>(s.memWrite||0)>=10},
+  {id:'event',e:'🏮',n:'Праздник!',d:'Пройди праздничное событие',t:s=>Object.keys(s.events||{}).length>=1},
+  {id:'rich',e:'🤑',n:'Коллекционер',d:'Собери 10 вещей в магазине',t:s=>s.owned.length>=10},
+];
+
+/* =========================================================
+   СОХРАНЕНИЕ ПРОГРЕССА
+   ========================================================= */
+const KEY='hanzi-hero-v1';
+const fresh = ()=>({v:2,child:'',heroId:null,heroName:'',xp:0,energy:60,streak:0,bestStreak:0,lastSessionDay:null,decayDay:null,
+  sessions:0,perfect:0,toneCorrect:0,writeCount:0,speakCount:0,buildCount:0,maxCombo:0,words:{},days:{},ach:[],msg:null,
+  coins:0,freezes:0,owned:[],eq:{pet:null,bg:null,aura:null},bosses:{},stories:{},quest:null,events:{},toneWord:0,memWrite:0,
+  settings:{rate:0.7,newPerSession:4,allOpen:false,speak:true,step:0}});
+let state;
+const ON_SERVER = location.protocol.startsWith('http');   // открыт по адресу http(s) — микрофон работает
+const HAS_API = ['localhost','127.0.0.1'].includes(location.hostname);   // локальный сервер server.py с сохранением в progress.json
+const LOCAL_URL = 'http://localhost:8765/index.html';
+let serverSaved = null;                                    // null — неизвестно, true/false — удалось ли сохранить в файл
+function normalize(d){
+  const s=Object.assign(fresh(),d||{});
+  s.settings=Object.assign(fresh().settings,s.settings||{});
+  s.eq=Object.assign({pet:null,bg:null,aura:null},s.eq||{});
+  return s;
+}
+function load(){
+  try{ const raw=localStorage.getItem(KEY)||localStorage.getItem(KEY+'-backup'); state=normalize(raw?JSON.parse(raw):null); }
+  catch(e){ state=fresh(); }
+}
+let saveTimer;
+function save(){
+  state.savedAt=Date.now();
+  try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){}
+  if(HAS_API){ clearTimeout(saveTimer); saveTimer=setTimeout(pushServer,600); }
+}
+function pushServer(keepalive){
+  const body=JSON.stringify(state);
+  return fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:!!keepalive&&body.length<60000})
+    .then(r=>{serverSaved=r.ok;}).catch(()=>{serverSaved=false;});
+}
+function backup(){ try{ localStorage.setItem(KEY+'-backup',JSON.stringify(state)); }catch(e){} }
+const hasProgress=s=>!!(s&&s.heroId&&(s.xp>0||Object.keys(s.words||{}).length));
+
+/* Объединение двух прогрессов (например, старый герой + новый): ничего не теряется */
+function mergeState(a,b){
+  if(!hasProgress(a)) return normalize(b);
+  if(!hasProgress(b)) return a;
+  a=normalize(a); b=normalize(b);
+  const m=normalize(a), sum=k=>(a[k]||0)+(b[k]||0);
+  ['xp','coins','sessions','perfect','toneCorrect','writeCount','speakCount','buildCount','toneWord','memWrite'].forEach(k=>m[k]=sum(k));
+  m.energy=Math.max(a.energy,b.energy); m.bestStreak=Math.max(a.bestStreak,b.bestStreak); m.maxCombo=Math.max(a.maxCombo||0,b.maxCombo||0);
+  m.freezes=Math.min(2,Math.max(a.freezes||0,b.freezes||0));
+  const later=(b.lastSessionDay||'')>(a.lastSessionDay||'')?b:a, earlier=later===a?b:a;
+  m.lastSessionDay=later.lastSessionDay; m.streak=later.streak;
+  // серии стыкуются: старый герой занимался до вчера, новый — с сегодня → это одна непрерывная серия
+  if(later.lastSessionDay&&earlier.lastSessionDay&&later.streak>0&&earlier.lastSessionDay===addDays(later.lastSessionDay,-later.streak)) m.streak+=earlier.streak;
+  m.bestStreak=Math.max(m.bestStreak,m.streak);
+  m.words={...a.words};
+  Object.entries(b.words||{}).forEach(([id,r])=>{ const x=m.words[id]; m.words[id]=!x?r:{box:Math.max(x.box,r.box),due:x.box>=r.box?x.due:r.due,c:x.c+r.c,w:x.w+r.w}; });
+  m.days={...a.days};
+  Object.entries(b.days||{}).forEach(([d,r])=>{ const x=m.days[d]; m.days[d]=!x?r:Object.fromEntries(Object.keys({...x,...r}).map(k=>[k,(x[k]||0)+(r[k]||0)])); });
+  const uni=(x,y)=>[...new Set([...(x||[]),...(y||[])])];
+  m.ach=uni(a.ach,b.ach); m.owned=uni(a.owned,b.owned);
+  m.bosses={...b.bosses,...a.bosses}; m.stories={...b.stories,...a.stories}; m.events={...b.events,...a.events};
+  m.oldHeroes=uni(a.oldHeroes,[...(b.oldHeroes||[]),b.heroId]).filter(h=>h&&h!==m.heroId);
+  return m;
+}
+/* Перенос из «файловой» версии (file://) на localhost одним кликом: данные едут в адресе после #, на сервер не уходят */
+const b64e=s=>btoa(unescape(encodeURIComponent(s)));
+const b64d=s=>decodeURIComponent(escape(atob(s)));
+function transferToLocalhost(){ location.href=LOCAL_URL+'#import='+encodeURIComponent(b64e(JSON.stringify(state))); }
+async function syncOnStart(){
+  if(!ON_SERVER) return;
+  try{
+    const d=HAS_API?await fetch('/api/progress',{cache:'no-store'}).then(r=>r.json()):null;
+    if(d && hasProgress(d) && (!hasProgress(state) || (d.savedAt||0)>(state.savedAt||0))) state=normalize(d);
+  }catch(e){}
+  if(location.hash.startsWith('#import=')){
+    try{
+      const inc=JSON.parse(b64d(decodeURIComponent(location.hash.slice(8))));
+      const had=hasProgress(state);
+      state=mergeState(state,inc);
+      state.msg=had?`🚚 Прогресс перенесён и объединён! Опыт, слова, юани и награды обоих героев теперь вместе.`:`🚚 Прогресс перенесён! С возвращением, ${state.heroName}!`;
+    }catch(e){ toast('Не получилось перенести прогресс 😕'); }
+    history.replaceState(null,'',location.pathname);
+  }
+  save(); backup();
+}
+
+/* даты */
+const pad2=n=>String(n).padStart(2,'0');
+const dstr=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+const today=()=>dstr(new Date());
+const addDays=(s,n)=>{const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return dstr(d)};
+const diffDays=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
+function dayRec(){ const d=today(); return state.days[d] ||= {xp:0,sessions:0,correct:0,wrong:0,min:0}; }
+
+/* Дисциплина: пропуск дня — герой устаёт. Заморозка серии спасает. Уровни и предметы не отнимаются. */
+function applyDecay(){
+  const t=today();
+  if(state.decayDay===t || !state.lastSessionDay){ state.decayDay=t; return; }
+  const gap=diffDays(state.lastSessionDay,t);
+  if(gap>=2){
+    const missed=gap-1, use=Math.min(state.freezes,missed), left=missed-use;
+    state.freezes-=use;
+    if(left===0){
+      state.lastSessionDay=addDays(t,-1);
+      state.msg=`❄️ Заморозка спасла твою серию! ${state.heroName} не устал. Осталось заморозок: ${state.freezes}.`;
+    } else {
+      state.energy=Math.max(5,state.energy-20*left);
+      if(state.streak>0) state.msg=`Пропущено ${missed} ${plural(missed,'день','дня','дней')}${use?` (заморозок хватило только на ${use})`:''}, и ${state.heroName} заскучал 😴 Серия сброшена. Один урок — и герой снова бодрый!`;
+      state.streak=0;
+    }
+  }
+  state.decayDay=t; save();
+}
+function plural(n,a,b,c){n=Math.abs(n)%100;const n1=n%10;if(n>10&&n<20)return c;if(n1>1&&n1<5)return b;if(n1===1)return a;return c;}
+
+/* уровни, энергия, монеты */
+const need=l=>80+30*(l-1);
+function levelInfo(xp=state.xp){ let l=1,rest=xp; while(rest>=need(l)){rest-=need(l);l++;} return {level:l,cur:rest,next:need(l)}; }
+const stageOf=l=>STAGE_LV.filter(x=>l>=x).length-1;
+const itemsOf=l=>ITEMS.filter(i=>l>=i.lv);
+const learnedCount=()=>Object.values(state.words).filter(r=>r.box>=1).length;
+const hero=()=>HEROES.find(h=>h.id===state.heroId)||HEROES[0];
+function power(){ const {level}=levelInfo(); return Math.round((level*10+itemsOf(level).length*5+learnedCount()*2)*(0.5+state.energy/200)); }
+function mood(){
+  const e=state.energy;
+  if(e>=70) return {k:'top',t:'Полон сил! 🔥'};
+  if(e>=40) return {k:'ok',t:'Бодрый 🙂'};
+  if(e>=15) return {k:'tired',t:'Устал… 🥱'};
+  return {k:'sleep',t:'Спит 💤'};
+}
+function addXP(n){ state.xp+=n; dayRec().xp+=n; questAdd('xp',n); }
+function addEnergy(n){ state.energy=Math.max(0,Math.min(100,state.energy+n)); }
+function addCoins(n){ state.coins+=n; }
+
+/* =========================================================
+   СТУПЕНИ СЛОЖНОСТИ: подсказки убираются по мере роста знаний
+   ========================================================= */
+const STEPS=['','с подсказками','без транскрипции','иероглифы без пиньиня','на слух и по памяти'];
+function autoStep(){ const n=learnedCount(); return n<30?1:n<70?2:n<120?3:4; }
+const step=()=>state.settings.step||autoStep();
+const boxOf=w=>(state.words[w.id]||{}).box||0;
+const showTr=w=>step()<=1||boxOf(w)<1;                       // русская транскрипция [ни хао]
+const showPy=w=>{ const st=step(),b=boxOf(w); return st<=2?b<4:st===3?b<2:b<1; }; // пиньинь
+
+/* тоны: варианты пиньиня с неправильным тоном (gǒu → góu, gòu, gōu) */
+const TV={a:'āáǎà',e:'ēéěè',i:'īíǐì',o:'ōóǒò',u:'ūúǔù',ü:'ǖǘǚǜ'};
+const TBASE={}; Object.entries(TV).forEach(([b,v])=>[...v].forEach((c,i)=>TBASE[c]=b));
+const setTone=(syl,t)=>[...syl].map(c=>TBASE[c]?TV[TBASE[c]][t-1]:c).join('');
+function toneVariants(p){
+  const syl=p.split(' '), idx=syl.map((x,i)=>toneOf(x)?i:-1).filter(i=>i>=0);
+  if(!idx.length) return null;
+  const out=new Set(); let n=0;
+  while(out.size<3&&n++<60){ const c=[...syl], i=rnd(idx), cur=toneOf(c[i]); c[i]=setTone(c[i],rnd([1,2,3,4].filter(x=>x!==cur))); const v=c.join(' '); if(v!==p) out.add(v); }
+  return out.size>=3?[...out]:null;
+}
+/* «вставь пропущенное слово» во фразу */
+function fillTask(s){
+  const idx=s.t.map((h,i)=>WBH[h]?i:-1).filter(i=>i>=0); if(!idx.length) return null;
+  const bi=rnd(idx), right=s.t[bi];
+  const pool=shuffle(COURSE.filter(w=>state.words[w.id]&&!s.t.includes(w.h)).map(w=>w.h)).slice(0,3);
+  if(pool.length<3) return null;
+  const opts=shuffle([right,...pool]);
+  return {type:'fill',s,bi,opts,ans:opts.indexOf(right)};
+}
+
+/* =========================================================
+   ЗАДАНИЯ ДНЯ
+   ========================================================= */
+function ensureQuest(){
+  const t=today();
+  if(state.quest && state.quest.day===t) return state.quest;
+  const pool=shuffle(Object.keys(QUESTS).filter(k=>k!=='lesson'&&(!QUESTS[k].ok||QUESTS[k].ok())));
+  state.quest={day:t,ids:['lesson',...pool.slice(0,2)],prog:{},claimed:false};
+  save(); return state.quest;
+}
+function questAdd(key,n,max){
+  if(!state.heroId) return;
+  const q=ensureQuest(); if(!q.ids.includes(key)) return;
+  const before=q.prog[key]||0, goal=QUESTS[key].goal;
+  q.prog[key]=max?Math.max(before,n):before+n;
+  if(before<goal && q.prog[key]>=goal) setTimeout(()=>toast(`✅ Задание выполнено: ${QUESTS[key].e} ${QUESTS[key].n}`),700);
+}
+const questsDone=q=>q.ids.every(k=>(q.prog[k]||0)>=QUESTS[k].goal);
+function openChest(){
+  const q=ensureQuest(); if(q.claimed||!questsDone(q)) return;
+  q.claimed=true;
+  const coins=25+(Math.random()*26|0); addCoins(coins); addXP(30);
+  let freeze=false; if(state.freezes<2 && Math.random()<.4){ state.freezes++; freeze=true; }
+  save(); backup(); sfx.win(); confetti();
+  app.innerHTML=`<div class="card center"><div class="chest">🎁</div><h1>Сундук открыт!</h1>
+    <div class="stat-grid"><div class="stat"><b>+${coins} 💴</b><span class="small muted">юаней</span></div>
+    <div class="stat"><b>+30 ✨</b><span class="small muted">опыта</span></div>
+    <div class="stat"><b>${freeze?'+1 ❄️':'—'}</b><span class="small muted">заморозка</span></div></div>
+    <p class="muted">Завтра будут новые задания!</p><button class="btn big" onclick="screenHome()">Ура!</button></div>`;
+  checkAch();
+}
+
+/* =========================================================
+   ЗВУК: озвучка, микрофон, эффекты
+   ========================================================= */
+let zhVoice=null;
+function pickVoice(){ const vs=speechSynthesis.getVoices(); zhVoice=vs.find(v=>/zh[-_]CN/i.test(v.lang)&&/Tingting|Ting-Ting|Xiaoxiao|Google/i.test(v.name))||vs.find(v=>/zh[-_]CN/i.test(v.lang))||vs.find(v=>/^zh/i.test(v.lang))||null; }
+if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
+function say(text,rate){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const clean=String(text).replace(/\{name\}/g,'').replace(/[A-Za-zА-Яа-яЁё…]/g,'');
+  const u=new SpeechSynthesisUtterance(clean);
+  u.lang='zh-CN'; if(zhVoice) u.voice=zhVoice; u.rate=rate||state.settings.rate;
+  speechSynthesis.speak(u);
+}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const speechOK=()=>!!SR && state.settings.speak;
+function listen(cb){
+  const r=new SR(); r.lang='zh-CN'; r.interimResults=false; r.maxAlternatives=5;
+  let done=false;
+  r.onresult=e=>{done=true;cb([...e.results[0]].map(a=>a.transcript));};
+  r.onerror=e=>{done=true;cb(null,e.error);};
+  r.onend=()=>{ if(!done) cb(null,'no-speech'); };
+  try{ r.start(); }catch(e){ cb(null,'start'); }
+  return r;
+}
+let ac;
+function beep(notes){
+  try{ ac ||= new (window.AudioContext||window.webkitAudioContext)();
+    notes.forEach(([f,t,d])=>{const o=ac.createOscillator(),g=ac.createGain();o.type='triangle';o.frequency.value=f;o.connect(g);g.connect(ac.destination);
+      const s=ac.currentTime+t;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.18,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.start(s);o.stop(s+d+.05);});
+  }catch(e){}
+}
+const sfx={ok:()=>beep([[660,0,.12],[880,.1,.18]]),no:()=>beep([[300,0,.2],[240,.15,.25]]),win:()=>beep([[523,0,.15],[659,.12,.15],[784,.24,.15],[1046,.36,.35]]),tick:()=>beep([[760,0,.06]]),coin:()=>beep([[988,0,.08],[1319,.07,.2]])};
+
+/* =========================================================
+   УТИЛИТЫ
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const app=document.getElementById('app');
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+const rnd=a=>a[Math.random()*a.length|0];
+const MARKS={1:'āēīōūǖ',2:'áéíóúǘ',3:'ǎěǐǒǔǚ',4:'àèìòùǜ'};
+function toneOf(s){for(const t of [1,2,3,4]) for(const c of MARKS[t]) if(s.includes(c)) return t; return 0;}
+const cpy=p=>p.split(' ').map(s=>`<span class="t${toneOf(s)}">${s}</span>`).join(' ');
+function chz(h,p){const c=[...h],s=p.split(' ');if(c.length!==s.length)return h;return c.map((ch,i)=>`<span class="t${toneOf(s[i])}">${ch}</span>`).join('');}
+const pyOf=h=>WBH[h]?WBH[h].p:(EXTRA[h]||'');
+const zhOnly=s=>s.replace(/[^一-鿿]/g,'');
+function toast(msg,ms=2600){const d=document.createElement('div');d.className='toast';d.innerHTML=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),ms);}
+function confetti(){const c=document.createElement('div');c.className='confetti';const em=['🎉','⭐','✨','🧧','🏮','💥','💴'];for(let i=0;i<30;i++){const s=document.createElement('i');s.textContent=rnd(em);s.style.left=Math.random()*100+'vw';s.style.animationDelay=Math.random()*.6+'s';c.appendChild(s);}document.body.appendChild(c);setTimeout(()=>c.remove(),2600);}
+function checkAch(){
+  const got=[];
+  ACH.forEach(a=>{ if(!state.ach.includes(a.id) && a.t(state)){ state.ach.push(a.id); got.push(a); }});
+  if(got.length){ save(); setTimeout(()=>{got.forEach((a,i)=>setTimeout(()=>toast(`🏆 Новая награда: ${a.e} ${a.n}`,3200),i*1200));confetti();},400); }
+  return got;
+}
+const back=(fn='screenHome()',title='')=>`<div class="row between"><button class="icon-btn" onclick="${fn}">← Назад</button><h2>${title}</h2><span class="pill">💴 ${state.coins}</span></div>`;
+
+/* =========================================================
+   ГЕРОЙ
+   ========================================================= */
+const shopItem=id=>SHOP.find(s=>s.id===id);
+function heroHTML(){
+  const h=hero(),{level}=levelInfo(),st=stageOf(level),m=mood(),items=itemsOf(level);
+  const aura=shopItem(state.eq.aura), bg=shopItem(state.eq.bg), pet=shopItem(state.eq.pet);
+  const c=aura?aura.c:h.c;
+  const rings=Array.from({length:st},(_,i)=>`<div class="ring" style="inset:${4+i*10}px;animation-duration:${14+i*6}s"></div>`).join('');
+  const orbit=items.map((it,i)=>{const a=i/items.length*2*Math.PI;return `<span style="transform:translate(${Math.cos(a)*98}px,${Math.sin(a)*98}px)"><i>${it.e}</i></span>`}).join('');
+  const lg=st>=5?LEGEND[st-5].c:'', ms=masteryStars(level);
+  const stage=`<div class="hero-stage mood-${m.k} ${lg}" style="--c:${c};--en:${state.energy/100}">${ms?`<div class="mstars">${'⭐'.repeat(Math.min(ms,5))}${ms>5?'+'+(ms-5):''}</div>`:''}
+    <div class="aura ${state.eq.aura==='aura_rainbow'?'rainbow':''}"></div>${rings}<div class="orbit">${orbit}</div>
+    <div class="hero-emoji">${stageEmoji(h,st)}</div>${m.k==='sleep'?'<div class="zzz">💤</div>':''}${pet?`<div class="pet">${pet.e}</div>`:''}</div>`;
+  return bg?`<div class="scene" style="background:${bg.css}"><span class="deco a">${bg.e}</span><span class="deco b">${bg.d2}</span>${stage}</div>`:stage;
+}
+function heroLine(){
+  const m=mood().k,n=state.child||'друг';
+  const lines={top:[`${n}, я чувствую силу! Вперёд за новыми словами!`,`你好, ${n}! Сегодня победим всех монстров!`,`Ещё немного — и я эволюционирую!`],
+    ok:[`Давай позанимаемся, ${n}? Я хочу стать сильнее!`,`Каждое новое слово — это +сила для меня!`],
+    tired:[`Я немного устал… Урок поможет мне взбодриться!`,`${n}, я скучаю! Давай выучим пару слов?`],
+    sleep:[`Хр-р-р… 💤 Разбуди меня уроком!`]};
+  return rnd(lines[m]);
+}
+
+/* =========================================================
+   ЭКРАНЫ: старт и главная
+   ========================================================= */
+const MONTHS=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const evKey=ev=>ev.id+'-'+today().slice(0,4);
+function eventCard(){
+  const ev=activeEvent(); if(!ev) return '';
+  const ws=eventWords(ev), got=ws.filter(w=>boxOf(w)>=1).length, done=state.events[evKey(ev)], [mm,dd]=ev.to.split('-');
+  return `<div class="card mt event"><div class="row between"><b>${ev.e} ${ev.name}</b><span class="small muted">до ${+dd} ${MONTHS[+mm-1]}</span></div>
+    <div class="small mt">${done?'🎉 Праздник пройден, награда получена!':`Выучи ${ws.length} праздничных слов и получи: <b>${ev.rewards.map(id=>shopItem(id).e+' '+shopItem(id).n).join(' + ')}</b> + 100 💴. Таких вещей нет в магазине!`}</div>
+    <div class="bar thin mt"><div style="width:${got/ws.length*100}%;background:var(--gold)"></div></div>
+    <button class="btn mt" onclick="startSession('event')">${ev.e} Праздничный урок · ${got}/${ws.length}</button></div>`;
+}
+function fileBanner(){
+  if(ON_SERVER) return '';
+  return `<div class="card tip" style="margin-bottom:12px;border:3px solid var(--primary)">
+    <b>⚠️ Для взрослых: тренажёр открыт как файл.</b> Здесь не работает микрофон, а прогресс хранится отдельно и может потеряться.<br>
+    1) Запустите «Запустить тренажер.command» из папки тренажёра.<br>
+    2) ${hasProgress(state)?`Вернитесь сюда и нажмите кнопку — прогресс героя «${state.heroName}» (уровень ${levelInfo().level}) переедет и объединится с новым:
+    <br><button class="btn mt" onclick="transferToLocalhost()">🚚 Перенести прогресс</button>`:'Занимайтесь в открывшейся вкладке Safari.'}</div>`;
+}
+let pickedHero=null;
+function screenStart(){
+  pickedHero=state.heroId||HEROES[0].id;
+  const changing=hasProgress(state);
+  app.innerHTML=`${fileBanner()}
+  <div class="center"><h1 style="font-size:34px">🏮 Китайский с героем</h1>
+  <p class="muted">${changing?`Смена героя: уровень ${levelInfo().level}, слова, юани и награды сохранятся — меняется только герой.`:'Учи китайский — и твой герой будет расти, получать снаряжение и эволюционировать!'}</p></div>
+  ${changing?'':`<div class="card tip" style="margin-bottom:12px">Уже занимался раньше? <label class="linkbtn" style="cursor:pointer">📂 Загрузить прогресс из файла<input type="file" accept=".json" hidden onchange="importData(this.files[0])"></label></div>`}
+  <div class="card">
+    <h3>1. Как тебя зовут?</h3>
+    <input id="child" type="text" maxlength="20" placeholder="Твоё имя" value="${state.child||''}">
+    <h3 class="mt2">2. Выбери своего героя</h3>
+    <div class="small muted mt">🎮 Герои GTA 5</div>
+    <div class="heroes mt">${HEROES.filter(h=>h.gta).map(h=>`
+      <button class="hero-pick gta ${h.id===pickedHero?'sel':''}" style="--c:${h.c}" data-h="${h.id}" onclick="pickHero('${h.id}')">
+        <div class="pv"><span class="e">${h.st[1]}</span><span class="tag">${h.style}</span></div>
+        <b>${h.name}</b><div class="evo">${h.st.join('→')}</div></button>`).join('')}</div>
+    <div class="small muted mt">🗝️ Секретные герои — открываются за уровни</div>
+    <div class="heroes mt">${HEROES.filter(h=>h.lock).map(h=>{const lk=heroLocked(h);return `
+      <button class="hero-pick ${h.id===pickedHero?'sel':''}" style="${lk?'opacity:.55':''}" data-h="${h.id}" onclick="${lk?`toast('🔒 Откроется на уровне ${h.lock}')`:`pickHero('${h.id}')`}">
+        <div class="e">${lk?'🔒':h.st[1]}</div><b>${h.name}</b><div class="small muted">${lk?`уровень ${h.lock}`:'открыт! ✨'}</div></button>`}).join('')}</div>
+    <div class="small muted mt">✨ Другие герои</div>
+    <div class="heroes mt">${HEROES.filter(h=>!h.gta&&!h.lock).map(h=>`
+      <button class="hero-pick ${h.id===pickedHero?'sel':''}" data-h="${h.id}" onclick="pickHero('${h.id}')">
+        <div class="e">${h.st[1]}</div><b>${h.name}</b><div class="small muted">${h.style}</div>
+        <div class="evo">${[...new Set(h.st)].join('→')}</div></button>`).join('')}</div>
+    <h3 class="mt2">3. Придумай герою имя</h3>
+    <input id="hname" type="text" maxlength="16" placeholder="Например: Лунь" value="${state.heroName||''}">
+    <button class="btn big mt2" onclick="finishStart()">Поехали! 🚀</button>
+  </div>`;
+}
+function pickHero(id){ pickedHero=id; document.querySelectorAll('.hero-pick').forEach(b=>b.classList.toggle('sel',b.dataset.h===id)); }
+function finishStart(){
+  const c=$('#child').value.trim(), hn=$('#hname').value.trim();
+  if(!c){ toast('Напиши своё имя 🙂'); return; }
+  const oldDefault=state.heroId&&HEROES.find(h=>h.id===state.heroId).name, newDefault=HEROES.find(h=>h.id===pickedHero).name;
+  state.child=c; state.heroId=pickedHero; state.heroName=(!hn||hn===oldDefault)?newDefault:hn;
+  save(); screenHome();
+}
+const weakWords=()=>Object.entries(state.words).filter(([,r])=>r.w>0&&r.box<=2).map(([id])=>WBY[id]);
+
+function screenHome(){
+  if(!state.heroId) return screenStart();
+  const h=hero(),li=levelInfo(),st=stageOf(li.level),m=mood(),d=state.days[today()];
+  const done=d&&d.sessions>0, q=ensureQuest(), weak=weakWords();
+  const nextStage=STAGE_LV[st+1], nextItem=ITEMS.find(i=>i.lv>li.level);
+  const due=Object.values(state.words).filter(r=>r.due<=today()).length;
+  app.innerHTML=`
+  <div class="topbar">
+    <span class="pill">🔥 ${state.streak}${state.freezes?` ❄️${state.freezes}`:''}</span>
+    <span class="pill">⭐ ур. ${li.level}</span>
+    <span class="pill">💴 ${state.coins}</span>
+    <span class="pill">📗 ${learnedCount()}</span>
+    <span class="pill" title="${STEPS[step()]}">🧗 ${step()}/4</span>
+  </div>
+  ${fileBanner()}
+  ${state.msg?`<div class="card tip" style="margin-bottom:12px">${state.msg} <button class="icon-btn" onclick="state.msg=null;save();screenHome()">Понятно</button></div>`:''}
+  <div class="card hero-card ${h.gta?'tinted':''}" style="--c:${h.c}">
+    <div class="row between"><b>${state.heroName}</b><span class="muted small">${stageTitle(h,st)}</span></div>
+    ${heroHTML()}
+    <div class="bubble">${heroLine()}</div>
+    <div class="mt"><div class="row between small"><span>⚡ Энергия · ${m.t}</span><span>${state.energy}/100</span></div>
+      <div class="bar"><div style="width:${state.energy}%;background:linear-gradient(90deg,#ffd166,#ff7a45)"></div></div></div>
+    <div class="mt"><div class="row between small"><span>✨ Опыт до уровня ${li.level+1}</span><span>${li.cur}/${li.next}</span></div>
+      <div class="bar"><div style="width:${li.cur/li.next*100}%;background:linear-gradient(90deg,#9b87ff,#7c5cff)"></div></div></div>
+    <div class="stat-grid">
+      <div class="stat"><b>💪 ${power()}</b><span class="small muted">сила</span></div>
+      <div class="stat"><b>${itemsOf(li.level).length}/${ITEMS.length}</b><span class="small muted">снаряжение</span></div>
+      <div class="stat"><b>${st+1}/${STAGE_LV.length}</b><span class="small muted">эволюция</span></div>
+    </div>
+    <p class="small muted" style="margin-bottom:0">${nextItem?`Уровень ${nextItem.lv}: ${nextItem.e} ${nextItem.n}. `:''}${nextStage?(st+1>=5?`Уровень ${nextStage}: ${LEGEND[st+1-5].n.toLowerCase()} эволюция! ✨`:`Уровень ${nextStage}: эволюция в ${stageEmoji(h,st+1)}!`):`Космический герой! Каждые 5 уровней — ⭐ звезда мастерства (следующая на уровне ${50+5*(masteryStars(li.level)+1)}).`}${HEROES.some(x=>x.lock&&x.lock>li.level)?` 🗝️ Секретный герой на уровне ${Math.min(...HEROES.filter(x=>x.lock&&x.lock>li.level).map(x=>x.lock))}.`:''}</p>
+  </div>
+  <div class="card mt">
+    <div class="row between"><b>🎯 Задания дня</b>${q.claimed?'<span class="small muted">Сундук открыт ✅</span>':questsDone(q)?'<button class="btn green" onclick="openChest()">🎁 Открыть!</button>':'<span class="small muted">за все три — 🎁</span>'}</div>
+    ${q.ids.map(k=>{const Q=QUESTS[k],v=Math.min(q.prog[k]||0,Q.goal);return `<div class="quest ${v>=Q.goal?'done':''}"><span class="qe">${v>=Q.goal?'✅':Q.e}</span>
+      <div><div class="small">${Q.n}</div><div class="bar thin"><div style="width:${v/Q.goal*100}%;background:var(--green)"></div></div></div><span class="small muted">${v}/${Q.goal}</span></div>`}).join('')}
+    <div class="small muted mt">${due?`Слов на повторение: ${due}. `:''}Урок ≈ 10 минут${done?' · сегодня уже был урок ✅':''}</div>
+  </div>
+  ${eventCard()}
+  <button class="btn big mt" onclick="startSession()">⚔️ ${done?'Ещё урок':'Начать урок'}</button>
+  ${weak.length?`<button class="btn ghost big mt" style="font-size:20px" onclick="startSession('mistakes')">🩹 Работа над ошибками (${weak.length})</button>`:''}
+  <div class="menu">
+    <button class="tile" onclick="screenMap()"><span class="e">🗺️</span>Карта</button>
+    <button class="tile" onclick="screenStories()"><span class="e">📖</span>Истории</button>
+    <button class="tile" onclick="screenTones()"><span class="e">🎵</span>Тоны</button>
+    <button class="tile" onclick="screenWrite()"><span class="e">✍️</span>Прописи</button>
+    <button class="tile" onclick="screenShop()"><span class="e">🛍️</span>Магазин</button>
+    <button class="tile" onclick="screenDict()"><span class="e">📚</span>Словарик</button>
+    <button class="tile" onclick="screenAch()"><span class="e">🏆</span>Награды</button>
+    <button class="tile" onclick="screenParentGate()"><span class="e">👨‍👩‍👧</span>Родителям</button>
+  </div>`;
+}
+
+/* =========================================================
+   УРОК (сессия): обычный, работа над ошибками, босс
+   ========================================================= */
+let S=null, HW=null;
+const unitWords=i=>WORDS.filter(w=>w.u===UNITS[i].id);
+function unitReady(i){ const ws=unitWords(i), recs=ws.map(w=>state.words[w.id]);
+  return !!state.bosses[UNITS[i].id] || (recs.every(Boolean) && recs.filter(r=>r.box>=2).length>=Math.ceil(ws.length/2)); }
+const unitSeen=i=>unitWords(i).every(w=>state.words[w.id]);
+function openUnits(){ if(state.settings.allOpen) return UNITS.length; let n=1; for(let i=0;i<UNITS.length-1;i++){ if(unitReady(i)) n=i+2; else break; } return n; }
+function openWords(){ const ids=UNITS.slice(0,openUnits()).map(u=>u.id); return WORDS.filter(w=>ids.includes(w.u)); }
+const readySentences=()=>SENTENCES.filter(s=>s.t.every(t=>EXTRA[t]||(WBH[t]&&state.words[WBH[t].id])));
+function distractors(w,n,key){
+  const pool=openWords().concat(WORDS.filter(x=>x.u===w.u));
+  const seen=new Set([w[key]]), out=[];
+  for(const x of shuffle(pool.filter(x=>x.u===w.u)).concat(shuffle(pool))){ if(out.length>=n) break; if(!seen.has(x[key])&&x.e!==w.e){ seen.add(x[key]); out.push(x);} }
+  return out;
+}
+function quizType(w,firstTime){ const box=boxOf(w), st=step();
+  if(firstTime) return rnd(['listen','meaning']);
+  const t=['listen','meaning','hanzi'];
+  if(st>=2&&box>=2){ t.push('listenHanzi'); if(toneVariants(w.p)) t.push('tone','tone'); }
+  if(st>=3&&box>=2) t.push('listenHanzi','hanzi');
+  return rnd(t); }
+function pickMatch(pool){ const out=[],es=new Set(); shuffle(pool).forEach(w=>{ if(!es.has(w.e)&&out.length<4){es.add(w.e);out.push(w);} }); return out.length>=3?{type:'match',ws:out}:null; }
+function writeTask(pool){ if(!window.HanziWriter) return null; const w=shuffle(pool).find(w=>[...w.h].length===1); return w?{type:'write',w}:null; }
+// На 3–4 ступени — написать хорошо знакомый иероглиф по памяти, без контура
+function memoryTask(){ if(!window.HanziWriter||step()<3) return null; const w=shuffle(COURSE.filter(w=>[...w.h].length===1&&boxOf(w)>=3))[0]; return w?{type:'write',w,mem:true}:null; }
+
+function startSession(mode='lesson',unitIdx){
+  const t=today(); let tasks=[], monster=rnd(MONSTERS);
+  if(mode==='mistakes'){
+    const ws=weakWords().sort((a,b)=>(state.words[b.id].w-state.words[b.id].c)-(state.words[a.id].w-state.words[a.id].c)).slice(0,8);
+    if(!ws.length){ toast('Ошибок нет — ты молодец! 🎉'); return; }
+    ws.forEach(w=>tasks.push({type:rnd(['meaning','hanzi','listen']),w}));
+    const m=pickMatch(ws); if(m) tasks.splice(Math.min(3,tasks.length),0,m);
+    ws.slice(0,3).forEach(w=>tasks.push({type:rnd(['meaning','hanzi','listen']),w}));
+    monster=['🩹','Монстр Ошибок'];
+  } else if(mode==='boss'){
+    const ws=shuffle(unitWords(unitIdx));
+    ws.forEach(w=>tasks.push({type:rnd(['listen','meaning','hanzi']),w}));
+    const m=pickMatch(ws); if(m) tasks.splice(Math.floor(tasks.length/2),0,m);
+    const snt=shuffle(readySentences().filter(s=>s.t.some(x=>WBH[x]&&WBH[x].u===UNITS[unitIdx].id)))[0]; if(snt) tasks.push({type:'build',s:snt});
+    monster=BOSSES[unitIdx];
+  } else if(mode==='event'){
+    const ev=activeEvent(); if(!ev) return;
+    const ws=eventWords(ev), fresh=ws.filter(w=>!state.words[w.id]).slice(0,4), seen=ws.filter(w=>state.words[w.id]);
+    fresh.forEach(w=>tasks.push({type:'learn',w})); fresh.forEach(w=>tasks.push({type:quizType(w,true),w}));
+    seen.forEach(w=>tasks.push({type:rnd(['listen','meaning','hanzi']),w}));
+    const m=pickMatch([...fresh,...seen]); if(m) tasks.push(m);
+    fresh.forEach(w=>tasks.push({type:rnd(['hanzi','listen']),w}));
+    monster=[ev.e,'Праздничный дракон'];
+  } else {
+    const fresh=openWords().filter(w=>!state.words[w.id]).slice(0,state.settings.newPerSession);
+    let rev=Object.entries(state.words).filter(([,r])=>r.due<=t).sort((a,b)=>a[1].box-b[1].box||a[1].due.localeCompare(b[1].due)).slice(0,6).map(([id])=>WBY[id]);
+    if(fresh.length+rev.length<5){ const extra=shuffle(Object.keys(state.words).map(id=>WBY[id]).filter(w=>!rev.includes(w))).slice(0,6-fresh.length-rev.length); rev=rev.concat(extra); }
+    if(!fresh.length && !rev.length){ toast('Все слова выучены! 🎉 Попроси взрослых открыть новые темы.'); return; }
+    const revQ=[...rev];
+    for(let i=0;i<fresh.length;i+=2){
+      const pair=fresh.slice(i,i+2);
+      pair.forEach(w=>tasks.push({type:'learn',w}));
+      pair.forEach(w=>tasks.push({type:quizType(w,true),w}));
+      revQ.splice(0,2).forEach(w=>tasks.push({type:quizType(w),w}));
+    }
+    revQ.forEach(w=>tasks.push({type:quizType(w),w}));
+    if(speechOK()) shuffle(fresh.length?fresh:rev).slice(0,step()>=2?1:2).forEach(w=>tasks.push({type:'speak',w}));
+    const pool=[...fresh,...rev];
+    const m=pickMatch(pool); if(m) tasks.push(m);
+    const wr=memoryTask()||writeTask(fresh.length?fresh:pool); if(wr) tasks.push(wr);
+    // чем выше ступень, тем больше сложных заданий вместо простых (урок остаётся ~10 минут)
+    const snts=shuffle(readySentences()), st=step();
+    snts.slice(0,st>=3?1:2).forEach(s=>tasks.push({type:'build',s}));
+    if(st>=2) snts.slice(2,st>=3?4:3).forEach(s=>{ const f=fillTask(s); if(f) tasks.push(f); });
+    if(speechOK()&&st>=2&&snts[4]) tasks.push({type:'speak',s:snts[4]});
+    if(st>=3) rev.slice(0,2).forEach(w=>{ const k=tasks.findIndex(x=>x.w===w&&x.type!=='learn'); if(k>=0&&tasks.length>18) tasks.splice(k,1); });
+    fresh.forEach(w=>tasks.push({type:rnd(['hanzi','listen']),w}));
+  }
+  S={mode,unitIdx,tasks,i:0,total:tasks.length,right:0,wrong:0,xp:0,coins:0,combo:0,maxCombo:0,retried:new Set(),up:new Set(),down:new Set(),
+     start:Date.now(),lvBefore:levelInfo().level,monster:monster[0],mname:monster[1],ev:mode==='event'?activeEvent().id:null};
+  renderTask();
+}
+function battleBar(){
+  const left=S.total-S.i;
+  return `<div class="row between"><button class="icon-btn" onclick="quitSession()">✕</button>
+    <span class="small muted">${S.mode==='boss'?'БОСС: ':''}${S.mname}</span>
+    <span class="small">${S.combo>=3?`<span class="combo">🔥 ${S.combo}${S.combo>=5?' ×2':''}</span> `:''}✨ +${S.xp}</span></div>
+  <div class="battle"><span class="h" id="bh">${stageEmoji(hero(),stageOf(levelInfo().level))}</span>
+  <div class="hp"><div class="bar"><div style="width:${left/S.total*100}%"></div></div></div>
+  <span class="m ${S.mode==='boss'?'boss':''}" id="bm">${S.monster}</span></div>`;
+}
+const next=()=>{ if(!S) return; S.i++; renderTask(); };
+function autoNext(ms=1300){ const at=S.i; setTimeout(()=>{ if(S&&S.i===at) next(); },ms); }
+const GRID=`<svg class="grid" viewBox="0 0 100 100" preserveAspectRatio="none"><g stroke="#e7b9a4" stroke-width=".6" stroke-dasharray="2 2"><line x1="0" y1="0" x2="100" y2="100"/><line x1="100" y1="0" x2="0" y2="100"/><line x1="50" y1="0" x2="50" y2="100"/><line x1="0" y1="50" x2="100" y2="50"/></g></svg>`;
+
+function renderTask(){
+  if(S.i>=S.tasks.length) return finishSession();
+  const t=S.tasks[S.i], w=t.w;
+  let body='', after=null;
+  if(t.type==='learn'){
+    body=`<div class="small muted">Новое слово!</div>
+      <div class="big-hz zh">${chz(w.h,w.p)}</div>
+      <div class="pinyin">${cpy(w.p)}</div><div class="ru-tr">[${w.r}]</div>
+      <div class="emoji-xl">${w.e}</div><h2>${w.ru}</h2>
+      <button class="speak mt" onclick="say('${w.h}')">🔊</button>
+      <div class="tip">🗣️ Послушай и повтори вслух 3 раза!${w.tip?`<br>💡 ${w.tip}`:''}</div>
+      <button class="btn green big mt" onclick="learned()">Запомнил! →</button>`;
+    after=()=>setTimeout(()=>say(w.h),350);
+  } else if(t.type==='listen'){
+    const opts=shuffle([w,...distractors(w,3,'ru')]);
+    body=`<h2>Послушай и выбери картинку</h2><button class="speak mt" onclick="say('${w.h}')">🔊</button>
+      <div class="options">${opts.map(o=>`<button class="opt" data-id="${o.id}" onclick="answer('${o.id}')"><span class="oe">${o.e}</span>${o.ru}</button>`).join('')}</div>`;
+    after=()=>setTimeout(()=>say(w.h),350);
+  } else if(t.type==='meaning'){
+    const opts=shuffle([w,...distractors(w,3,'ru')]);
+    body=`<h2>Что это значит?</h2><div class="big-hz zh">${showPy(w)?chz(w.h,w.p):w.h}</div>${showPy(w)?`<div class="pinyin">${cpy(w.p)}</div>`:''}
+      <button class="icon-btn" onclick="say('${w.h}')">🔊 послушать</button>
+      <div class="options">${opts.map(o=>`<button class="opt" data-id="${o.id}" onclick="answer('${o.id}')"><span class="oe">${o.e}</span>${o.ru}</button>`).join('')}</div>`;
+  } else if(t.type==='hanzi'){
+    const opts=shuffle([w,...distractors(w,3,'h')]); const py=showPy(w);
+    body=`<h2>Найди иероглиф</h2><div class="emoji-xl">${w.e}</div><h2>${w.ru}</h2>
+      <div class="options">${opts.map(o=>`<button class="opt" data-id="${o.id}" onclick="answer('${o.id}')"><span class="ohz zh">${o.h}</span>${py?`<span class="small">${cpy(o.p)}</span>`:''}</button>`).join('')}</div>`;
+  } else if(t.type==='listenHanzi'){
+    const opts=shuffle([w,...distractors(w,3,'h')]);
+    body=`<h2>👂 Услышь и найди иероглиф</h2><button class="speak mt" onclick="say('${w.h}')">🔊</button>
+      <div class="options">${opts.map(o=>`<button class="opt" data-id="${o.id}" onclick="answer('${o.id}')"><span class="ohz zh">${o.h}</span></button>`).join('')}</div>`;
+    after=()=>setTimeout(()=>say(w.h),350);
+  } else if(t.type==='tone'){
+    if(!t.opts){ t.opts=shuffle([w.p,...toneVariants(w.p)]); t.ans=t.opts.indexOf(w.p); }
+    body=`<h2>🎼 Какой тон правильный?</h2><div class="big-hz zh">${w.h}</div><div>${w.e} ${w.ru}</div>
+      <button class="icon-btn mt" onclick="say('${w.h}')">🔊 послушать</button>
+      <div class="options">${t.opts.map((o,k)=>`<button class="opt" data-k="${k}" onclick="pickOpt(${k})"><span class="pinyin">${o}</span></button>`).join('')}</div>`;
+    after=()=>setTimeout(()=>say(w.h),350);
+  } else if(t.type==='fill'){
+    const sp=step()<3;
+    body=`<h2>✏️ Вставь пропущенное слово</h2><div class="tip" style="font-size:22px">${t.s.ru}</div>
+      <div class="zh mt" style="font-size:42px">${t.s.t.map((h,i)=>i===t.bi?'<span style="color:var(--violet)">＿＿</span>':h).join('')}</div>
+      ${sp?`<div class="small muted">${t.s.t.map((h,i)=>i===t.bi?'___':pyOf(h)).join(' ')}</div>`:''}
+      <div class="options">${t.opts.map((o,k)=>`<button class="opt" data-k="${k}" onclick="pickOpt(${k})"><span class="ohz zh" style="font-size:38px">${o}</span>${sp?`<span class="small">${pyOf(o)}</span>`:''}</button>`).join('')}</div>`;
+  } else if(t.type==='match'){
+    S.m={sel:null,left:t.ws.length,miss:0};
+    body=`<h2>Собери пары!</h2><div class="small muted">Нажми иероглиф, потом картинку</div>
+      <div class="match"><div class="col">${shuffle(t.ws).map(o=>`<button class="mi zh" data-l="${o.id}" onclick="mSel('${o.id}')">${o.h}</button>`).join('')}</div>
+      <div class="col">${shuffle(t.ws).map(o=>`<button class="mi" data-r="${o.id}" onclick="mPair('${o.id}')">${o.e}</button>`).join('')}</div></div>`;
+  } else if(t.type==='speak'){
+    S.sp={tries:0,busy:false};
+    const tg=t.s?{h:t.s.t.join(''),p:t.s.t.map(pyOf).join(' '),ru:t.s.ru}:w;
+    body=`<h2>🎤 Скажи вслух${t.s?' фразу':''}!</h2><div class="${t.s?'':'big-hz'} zh" style="${t.s?'font-size:48px':''}">${t.s?tg.h:chz(w.h,w.p)}</div><div class="pinyin" style="${t.s?'font-size:22px':''}">${t.s?tg.p:cpy(w.p)}</div>
+      <div class="ru-tr">${t.s?tg.ru:`${step()<=2?`[${w.r}] — `:''}${w.e} ${w.ru}`}</div>
+      <div class="row cen mt" style="gap:22px"><button class="speak" onclick="say('${tg.h}')">🔊</button><button class="speak mic" id="mic" onclick="speakTry()">🎤</button></div>
+      <div id="heard" class="mt">Сначала послушай 🔊, потом нажми 🎤 и скажи</div>
+      <button class="linkbtn mt" onclick="skipSpeak()">🙊 Не могу сейчас говорить</button>`;
+    after=()=>setTimeout(()=>say(tg.h),350);
+  } else if(t.type==='write'){
+    body=`<h2>${t.mem?'🧠 Напиши по памяти':'✍️ Напиши иероглиф'}</h2><div class="mt">${w.e} <b>${w.ru}</b> — <span class="pinyin" style="font-size:22px">${cpy(w.p)}</span></div>
+      <div class="pad">${GRID}<div id="hw"></div></div>
+      <div class="small muted">${t.mem?'Контура нет — вспомни сам! После 3 ошибок покажу подсказку.':'Пиши черту за чертой. Ошибёшься — подскажу!'}</div>
+      <div class="row cen mt wrap"><button class="icon-btn" onclick="hwDemo()">▶ Покажи как</button><button class="icon-btn" onclick="say('${w.h}')">🔊</button><button class="linkbtn" onclick="next()">Пропустить</button></div>`;
+    after=()=>mountWriter(w.h,{outline:!t.mem},m=>{
+      if(m===null){ next(); return; }
+      state.writeCount++; questAdd('write',1); if(t.mem&&m<=2) state.memWrite=(state.memWrite||0)+1;
+      const {x,mult}=reward(t.mem?(m<=2?15:8):(m<=2?10:6));
+      $('#fbx').innerHTML=`<div class="feedback ok">🖌️ ${m===0?'Идеально!':rnd(PRAISE)} +${x} ✨${mult>1?' 🔥 Комбо ×2!':''}</div>`;
+      save(); autoNext(1600);
+    });
+  } else if(t.type==='build'){
+    const s=t.s, extra=shuffle(readySentences().flatMap(x=>x.t).filter(h=>!s.t.includes(h)&&!EXTRA[h])).filter((h,i,a)=>a.indexOf(h)===i).slice(0,2);
+    S.b={chosen:[],tiles:shuffle([...s.t.map((h,i)=>({k:'t'+i,h})),...extra.map((h,i)=>({k:'d'+i,h}))])};
+    body=`<h2>🧩 Собери фразу</h2><div class="tip" style="font-size:24px">${s.ru}</div>
+      <div id="ans" class="ans"></div><div id="bank" class="bank"></div>
+      <button class="btn green big mt" id="chk" onclick="buildCheck()" disabled>Проверить</button>`;
+    after=renderBuild;
+  }
+  app.innerHTML=battleBar()+`<div class="card task">${body}<div id="fbx"></div></div>`;
+  if(after) after();
+}
+function rec(w){ return state.words[w.id] ||= {box:0,due:today(),c:0,w:0}; }
+function learned(){ const w=S.tasks[S.i].w; rec(w); addXP(3); S.xp+=3; save(); next(); }
+function hitMonster(){ const h=$('#bh'),m=$('#bm'); if(!h) return; h.classList.add('hit'); setTimeout(()=>{h.classList.remove('hit');m.classList.add('hurt');},200); }
+// Общая награда за верный ответ: комбо, опыт, монеты, энергия
+function reward(base){
+  S.combo++; S.maxCombo=Math.max(S.maxCombo,S.combo); state.maxCombo=Math.max(state.maxCombo,S.combo);
+  questAdd('combo',S.combo,true);
+  const mult=S.combo>=5?2:1, x=base*mult;
+  addXP(x); S.xp+=x; addCoins(1); S.coins++; addEnergy(3); S.right++; dayRec().correct++;
+  sfx.ok(); hitMonster();
+  return {x,mult};
+}
+function miss(){ S.combo=0; S.wrong++; dayRec().wrong++; sfx.no(); }
+function answer(id){
+  const t=S.tasks[S.i], w=t.w, r=rec(w), ok=id===w.id;
+  document.querySelectorAll('.opt').forEach(b=>{b.disabled=true; if(b.dataset.id===w.id) b.classList.add('right'); else if(b.dataset.id===id) b.classList.add('wrongc');});
+  if(ok){
+    r.c++;
+    if(!S.up.has(w.id)&&!S.down.has(w.id)){ r.box=Math.min(5,r.box+1); r.due=addDays(today(),INTERVALS[r.box]); S.up.add(w.id); }
+    const {x,mult}=reward(t.retry?5:10); say(w.h);
+    $('#fbx').innerHTML=`<div class="feedback ok">✅ ${rnd(PRAISE)} <span class="small">+${x} ✨ +1 💴${mult>1?' 🔥 Комбо ×2!':''}</span></div>`;
+    save(); autoNext();
+  } else {
+    r.w++; miss();
+    r.box=Math.min(r.box,1); r.due=addDays(today(),1); S.down.add(w.id);
+    if(S.mode!=='boss' && !S.retried.has(w.id)){ S.retried.add(w.id); S.tasks.push({type:'meaning',w,retry:true}); S.total++; }
+    setTimeout(()=>say(w.h),300);
+    $('#fbx').innerHTML=`<div class="feedback no">${rnd(SUPPORT)}<div class="mt"><span class="zh" style="font-size:40px">${chz(w.h,w.p)}</span> ${cpy(w.p)} — <b>${w.ru}</b> ${w.e}</div>
+      <button class="btn mt" onclick="next()">Дальше →</button></div>`;
+    save();
+  }
+}
+function mSel(id){ S.m.sel=id; document.querySelectorAll('.mi[data-l]').forEach(b=>b.classList.toggle('sel',b.dataset.l===id)); say(WBY[id].h); }
+function mPair(id){
+  if(!S.m.sel){ toast('Сначала нажми иероглиф слева 👈',1500); return; }
+  const L=document.querySelector(`.mi[data-l="${S.m.sel}"]`), R=document.querySelector(`.mi[data-r="${id}"]`);
+  if(S.m.sel===id){ L.classList.add('done');R.classList.add('done');S.m.sel=null;S.m.left--;sfx.tick();
+    if(S.m.left===0){ const {x,mult}=reward(S.m.miss===0?20:15); save();
+      $('#fbx').innerHTML=`<div class="feedback ok">🧩 ${rnd(PRAISE)} +${x} ✨${mult>1?' 🔥 Комбо ×2!':''}</div>`; autoNext(1200); }
+  } else { S.m.miss++; R.classList.add('bad'); sfx.no(); setTimeout(()=>R.classList.remove('bad'),400); }
+}
+/* говорение */
+/* Микрофон: сначала явно просим доступ — так Safari показывает окно «Разрешить» */
+let micReady=false;
+async function ensureMic(){
+  if(micReady) return true;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) return true;
+  try{ const st=await navigator.mediaDevices.getUserMedia({audio:true}); st.getTracks().forEach(t=>t.stop()); micReady=true; return true; }
+  catch(e){ return e.name||'error'; }
+}
+const MIC_HELP=`<button class="btn violet mt" onclick="screenMic('lesson')">🛠️ Как включить микрофон</button>`;
+async function speakTry(){
+  if(S.sp.busy) return; S.sp.busy=true;
+  const t=S.tasks[S.i], tgH=t.s?t.s.t.join(''):t.w.h, need=t.s?0.6:0.5, mic=$('#mic'), heard=$('#heard');
+  speechSynthesis.cancel();
+  if(!ON_SERVER){ S.sp.busy=false; heard.innerHTML='Микрофон работает только если тренажёр открыт через «Запустить тренажер.command». Попроси взрослых 🙂'+MIC_HELP; return; }
+  heard.textContent='Включаю микрофон…';
+  const ok=await ensureMic();
+  if(ok!==true){ S.sp.busy=false; heard.innerHTML='Нет доступа к микрофону 🎤 Попроси взрослых помочь — это займёт минуту.'+MIC_HELP; return; }
+  mic.classList.add('on'); heard.textContent='Слушаю… говори!';
+  listen((alts,err)=>{
+    S.sp.busy=false; if(!$('#mic')) return; mic.classList.remove('on');
+    if(err){
+      heard.innerHTML= err==='not-allowed'||err==='service-not-allowed' ? 'Микрофон есть, но распознавание речи выключено в настройках Mac.'+MIC_HELP
+        : err==='no-speech' ? 'Я ничего не услышал. Нажми 🎤 и скажи погромче!' : `Микрофон не сработал (${err}). Попробуй ещё раз.`+MIC_HELP;
+      return;
+    }
+    const target=zhOnly(tgH); let best=0, bestAlt=alts[0]||'';
+    alts.forEach(a=>{const n=zhOnly(a); const sc=[...target].filter(c=>n.includes(c)).length/target.length; if(sc>best){best=sc;bestAlt=a;}});
+    S.sp.tries++;
+    if(best>=need){
+      state.speakCount++; questAdd('speak',1);
+      const {x,mult}=reward(t.s?15:10);
+      $('#fbx').innerHTML=`<div class="feedback ok">🎤 ${rnd(PRAISE)} Я услышал: <span class="zh">${bestAlt}</span> +${x} ✨${mult>1?' 🔥 Комбо ×2!':''}</div>`;
+      save(); autoNext(1700);
+    } else if(S.sp.tries>=2){
+      addXP(3); S.xp+=3; save();
+      $('#fbx').innerHTML=`<div class="feedback no">👍 Хорошая попытка! Я услышал «<span class="zh">${bestAlt||'…'}</span>». Послушай ещё раз и двигаемся дальше.
+        <br><button class="btn mt" onclick="next()">Дальше →</button></div>`;
+      say(tgH);
+    } else {
+      heard.innerHTML=`Я услышал «<span class="zh">${bestAlt||'…'}</span>». Послушай 🔊 и попробуй ещё раз!`;
+    }
+  });
+}
+/* ответ в упражнениях с вариантами-строками: «тон» и «вставь слово» */
+function pickOpt(k){
+  const t=S.tasks[S.i], ok=k===t.ans, txt=t.type==='fill'?t.s.t.join(''):t.w.h;
+  document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;const kk=+b.dataset.k;if(kk===t.ans)b.classList.add('right');else if(kk===k)b.classList.add('wrongc');});
+  say(txt);
+  if(ok){
+    if(t.type==='tone') state.toneWord=(state.toneWord||0)+1;
+    const {x,mult}=reward(t.type==='tone'?10:12);
+    $('#fbx').innerHTML=`<div class="feedback ok">✅ ${rnd(PRAISE)} <span class="small">+${x} ✨ +1 💴${mult>1?' 🔥 Комбо ×2!':''}</span>${t.type==='fill'?`<div class="zh mt" style="font-size:30px">${txt}</div>`:''}</div>`;
+    save(); autoNext(1700);
+  } else {
+    miss(); save();
+    const right=t.type==='fill'?`<span class="zh" style="font-size:30px">${txt}</span><br>${t.s.t.map(pyOf).join(' ')}`:`<span class="pinyin">${cpy(t.w.p)}</span>`;
+    $('#fbx').innerHTML=`<div class="feedback no">${rnd(SUPPORT)}<div class="mt">Правильно: ${right}</div><button class="btn mt" onclick="next()">Дальше →</button></div>`;
+  }
+}
+function skipSpeak(){
+  const before=S.tasks.length;
+  S.tasks=S.tasks.filter((t,j)=>j<=S.i||t.type!=='speak'); S.total-=before-S.tasks.length;
+  toast('Хорошо! Сегодня без говорения 🙊',1800); next();
+}
+/* письмо по чертам (Hanzi Writer) */
+function mountWriter(ch,a,b){
+  const opts=typeof a==='function'?{}:a, onDone=typeof a==='function'?a:b, outline=opts.outline!==false;
+  const el=$('#hw'); if(!el||!window.HanziWriter){ onDone(null); return; }
+  const size=el.clientWidth;
+  HW=HanziWriter.create('hw',ch,{width:size,height:size,padding:14,showCharacter:false,showOutline:outline,
+    strokeColor:'#2b2350',outlineColor:'#eadfcd',drawingColor:'#ff7a45',drawingWidth:Math.max(14,size/22),highlightColor:'#7c5cff',
+    showHintAfterMisses:outline?2:3,strokeAnimationSpeed:1,delayBetweenStrokes:250,onLoadCharDataError:()=>onDone(null)});
+  HW._done=onDone; hwQuiz();
+}
+function hwQuiz(){ if(!HW) return; HW.quiz({onMistake:()=>sfx.no(),onCorrectStroke:()=>sfx.tick(),onComplete:d=>HW._done(d.totalMistakes)}); }
+function hwDemo(){ if(!HW) return; HW.cancelQuiz(); HW.animateCharacter({onComplete:()=>setTimeout(hwQuiz,400)}); }
+/* сборка фраз */
+function renderBuild(){
+  const tile=(o,fn,used)=>`<button class="tl ${used?'used':''}" onclick="${fn}('${o.k}')"><span class="zh">${o.h}</span><small>${pyOf(o.h)}</small></button>`;
+  $('#ans').innerHTML=S.b.chosen.map(k=>tile(S.b.tiles.find(o=>o.k===k),'buildUn')).join('')||'<span class="muted small">Нажимай на плитки внизу</span>';
+  $('#bank').innerHTML=S.b.tiles.map(o=>tile(o,'buildAdd',S.b.chosen.includes(o.k))).join('');
+  $('#chk').disabled=!S.b.chosen.length;
+}
+function buildAdd(k){ if(S.b.chosen.includes(k)||S.b.locked) return; S.b.chosen.push(k); say(S.b.tiles.find(o=>o.k===k).h); renderBuild(); }
+function buildUn(k){ if(S.b.locked) return; S.b.chosen=S.b.chosen.filter(x=>x!==k); renderBuild(); }
+function buildCheck(){
+  const s=S.tasks[S.i].s, got=S.b.chosen.map(k=>S.b.tiles.find(o=>o.k===k).h).join(''), want=s.t.join('');
+  S.b.locked=true; $('#chk').disabled=true;
+  const full=`<span class="zh" style="font-size:32px">${s.t.join('')}</span><br>${s.t.map(pyOf).join(' ')}`;
+  say(want);
+  if(got===want){
+    state.buildCount++; questAdd('build',1);
+    const {x,mult}=reward(12);
+    $('#fbx').innerHTML=`<div class="feedback ok">🧩 ${rnd(PRAISE)} +${x} ✨${mult>1?' 🔥 Комбо ×2!':''}<div class="mt">${full}</div></div>`;
+    save(); autoNext(2200);
+  } else {
+    miss(); save();
+    $('#fbx').innerHTML=`<div class="feedback no">Почти! Правильно так:<div class="mt">${full}</div><button class="btn mt" onclick="next()">Дальше →</button></div>`;
+  }
+}
+function quitSession(){ if(confirm('Выйти из урока? Монстр убежит, но заработанный опыт и юани останутся.')){ save(); S=null; HW=null; screenHome(); } }
+function finishSession(){
+  const t=today(), dr=dayRec();
+  if(state.lastSessionDay!==t){ state.streak = state.lastSessionDay===addDays(t,-1) ? state.streak+1 : 1; state.lastSessionDay=t; }
+  state.bestStreak=Math.max(state.bestStreak,state.streak);
+  let bonus=20+Math.min(state.streak,10)*2, coins=10;
+  const acc=S.right/Math.max(1,S.right+S.wrong);
+  if(S.wrong===0){ state.perfect++; coins+=10; }
+  let bossWin=null;
+  if(S.mode==='boss'){
+    const u=UNITS[S.unitIdx].id; bossWin=acc>=0.8;
+    if(bossWin){ if(!state.bosses[u]){ coins+=50; bonus+=60; } state.bosses[u]=true; }
+  }
+  let evMsg='';
+  if(S.mode==='event'){
+    const ev=EVENTS.find(e=>e.id===S.ev), key=evKey(ev);
+    if(eventWords(ev).every(w=>boxOf(w)>=1) && !state.events[key]){
+      state.events[key]=true; coins+=100; ev.rewards.forEach(id=>{ if(!state.owned.includes(id)) state.owned.push(id); });
+      evMsg=`<div class="tip"><b>${ev.e} Праздник пройден!</b> Награда: ${ev.rewards.map(id=>shopItem(id).e+' '+shopItem(id).n).join(' + ')} + 100 💴 — надень в магазине!</div>`;
+    }
+  }
+  addXP(bonus); S.xp+=bonus; addCoins(coins); S.coins+=coins; addEnergy(20);
+  state.sessions++; dr.sessions++; dr.min+=Math.round((Date.now()-S.start)/60000);
+  questAdd('lesson',1);
+  state.msg=null; save(); backup();
+  const li=levelInfo(), up=li.level>S.lvBefore, newItems=ITEMS.filter(i=>i.lv>S.lvBefore&&i.lv<=li.level);
+  const evo=stageOf(li.level)>stageOf(S.lvBefore), stars=acc>=.9?3:acc>=.7?2:1;
+  sfx.win(); if(bossWin!==false) confetti();
+  const title = bossWin===false ? `Босс сбежал! ${S.monster}💨` : `Победа! ${S.monster}💥`;
+  const sub = bossWin===false ? `Нужно 80% верных ответов, у тебя ${Math.round(acc*100)}%. Повтори слова и возвращайся — ты почти у цели!`
+    : bossWin ? `Босс «${S.mname}» повержен! Следующая часть карты открыта 🗺️` : `${S.mname} повержен!`;
+  app.innerHTML=`<div class="card center">
+    <h1>${title}</h1><p class="muted">${sub}</p>
+    <div style="font-size:48px;color:var(--gold)">${'★'.repeat(stars)}<span style="color:#e8dfcc">${'★'.repeat(3-stars)}</span></div>
+    ${heroHTML()}
+    ${evo?`<h2 class="mt">🌟 ЭВОЛЮЦИЯ! ${state.heroName} теперь «${stageTitle(hero(),stageOf(li.level))}»!</h2>`:up?`<h2 class="mt">⬆️ Новый уровень: ${li.level}!</h2>`:''}
+    ${evMsg}${newItems.map(i=>`<div class="tip">Новое снаряжение: <b>${i.e} ${i.n}</b></div>`).join('')}
+    ${HEROES.filter(h=>h.lock&&h.lock>S.lvBefore&&h.lock<=li.level).map(h=>`<div class="tip">🗝️ Открыт секретный герой: <b>${h.st[1]} ${h.name}</b>! Выбрать: «Родителям» → «Сменить героя».</div>`).join('')}
+    <div class="stat-grid"><div class="stat"><b>+${S.xp}</b><span class="small muted">опыт</span></div>
+      <div class="stat"><b>+${S.coins} 💴</b><span class="small muted">юаней</span></div>
+      <div class="stat"><b>${Math.round(acc*100)}%</b><span class="small muted">точность</span></div></div>
+    <p>🔥 ${state.streak} ${plural(state.streak,'день','дня','дней')} подряд · лучшее комбо: ${S.maxCombo} · энергия ${state.energy}/100</p>
+    <button class="btn big" onclick="S=null;HW=null;screenHome()">На главную</button></div>`;
+  checkAch();
+}
+
+/* =========================================================
+   КАРТА С БОССАМИ
+   ========================================================= */
+function screenMap(){
+  const n=openUnits(), places=hero().gta?PLACES_LS:PLACES_CN;
+  let rows='';
+  UNITS.forEach((u,i)=>{
+    const ws=unitWords(i), got=ws.filter(w=>(state.words[w.id]||{}).box>=1).length, lock=i>=n, cur=i===n-1&&!state.bosses[u.id];
+    const align=['flex-start','center','flex-end','center'][i%4];
+    rows+=`<div class="node-row" style="justify-content:${align}"><button class="node ${lock?'lock':cur?'cur':got===ws.length?'done':''}" onclick="${lock?"toast('🔒 Победи предыдущего босса или закрепи слова прошлой темы')":"startSession()"}">
+      ${cur?`<span class="here" style="left:-6px">${stageEmoji(hero(),stageOf(levelInfo().level))}</span>`:''}
+      <span class="ic">${lock?'🔒':u.icon}</span><span><b>${places[i]}</b>${u.hsk?` <span class="hsk">HSK ${u.hsk}</span>`:''}<br><span class="small muted">${u.name} · ${got}/${ws.length}</span></span></button></div>`;
+    const beat=!!state.bosses[u.id], can=!lock&&unitSeen(i);
+    rows+=`<div class="node-row" style="justify-content:${align}"><button class="node boss ${beat?'done':can?'':'lock'}" onclick="${can?`startSession('boss',${i})`:"toast('Сначала изучи все слова этой темы 📗')"}">
+      <span class="ic">${beat?'🏆':BOSSES[i][0]}</span><span><b>Босс: ${BOSSES[i][1]}</b><br><span class="small muted">${beat?'Побеждён! Можно сразиться снова':can?'Готов к битве! Нужно 80% ✔':'Ждёт, пока выучишь все слова'}</span></span></button></div>`;
+  });
+  app.innerHTML=back('screenHome()',hero().gta?'🗺️ Лос-Сантос':'🗺️ Путешествие по Китаю')+
+  `<p class="small muted">Каждая остановка — новая тема. Победи босса, чтобы открыть следующую! За первую победу над боссом: +50 💴 и +60 ✨</p><div class="path">${rows}</div>`;
+}
+
+/* =========================================================
+   МАГАЗИН
+   ========================================================= */
+function screenShop(){
+  app.innerHTML=back('screenHome()','🛍️ Магазин')+
+  `<p class="small muted">Юани 💴 даются за правильные ответы, уроки, боссов и сундуки.</p>
+  <div class="card mt center">${heroHTML()}</div>`+
+  Object.entries(SHOP_CATS).map(([cat,name])=>`<h3 class="mt2">${name}</h3><div class="shop">${SHOP.filter(s=>s.cat===cat).map(s=>{
+    const own=state.owned.includes(s.id), on=state.eq[cat]===s.id;
+    const evn=s.ev&&EVENTS.find(e=>e.id===s.ev);
+    const btn = cat==='use' ? `<button class="btn" onclick="buy('${s.id}')">${s.price} 💴</button><div class="small muted">есть: ${state.freezes}/2</div>`
+      : own ? `<button class="btn ${on?'ghost':'green'}" onclick="equip('${s.id}')">${on?'Снять':'Надеть'}</button>`
+      : evn ? `<div class="small muted mt">🎁 Награда праздника «${evn.name}»</div>`
+      : `<button class="btn" ${state.coins<s.price?'disabled':''} onclick="buy('${s.id}')">${s.price} 💴</button>`;
+    return `<div class="item ${on?'on':''} ${s.rare?'rare':''}" style="${evn&&!own?'opacity:.6':''}">${s.rare?'<div class="small" style="color:var(--gold)">✨ легендарное</div>':''}<div class="e">${s.e}</div><b>${s.n}</b>${s.d?`<div class="small muted">${s.d}</div>`:''}<div>${btn}</div></div>`;
+  }).join('')}</div>`).join('');
+}
+function buy(id){
+  const s=shopItem(id); if(s.ev) return;
+  if(state.coins<s.price){ toast(`Не хватает юаней: нужно ${s.price} 💴`); return; }
+  if(id==='freeze'){ if(state.freezes>=2){ toast('Уже есть 2 заморозки — это максимум ❄️'); return; } state.freezes++; }
+  else { state.owned.push(id); state.eq[s.cat]=id; }
+  state.coins-=s.price; sfx.coin(); save(); toast(`Куплено: ${s.e} ${s.n}!`); checkAch(); screenShop();
+}
+function equip(id){ const s=shopItem(id); state.eq[s.cat]=state.eq[s.cat]===id?null:id; save(); screenShop(); }
+
+/* =========================================================
+   ИСТОРИИ
+   ========================================================= */
+const openStories=()=>STORIES.filter(s=>s.u<openUnits());
+let ST=null;
+function screenStories(){
+  const n=openUnits();
+  app.innerHTML=back('screenHome()','📖 Истории')+
+  `<p class="small muted">Короткие диалоги с твоим героем. Нажми на реплику, чтобы послушать ещё раз.</p>`+
+  STORIES.map(s=>{const lock=s.u>=n, done=state.stories[s.id];
+    return `<button class="card mt row" style="width:100%;text-align:left;${lock?'opacity:.5':''}" onclick="${lock?`toast('🔒 Откроется с темой «${UNITS[s.u].name}»')`:`openStory('${s.id}')`}">
+      <span style="font-size:44px">${lock?'🔒':s.npc}</span><span style="flex:1"><b>${s.title}</b><br><span class="small muted">${UNITS[s.u].icon} ${UNITS[s.u].name}</span></span><span>${done?'✅':'▶'}</span></button>`}).join('');
+}
+function openStory(id){ ST={s:STORIES.find(x=>x.id===id),i:0,ok:0,q:0,answered:false}; renderStory(); }
+const nameIn=s=>s.replace(/\{name\}/g,state.heroName);
+function renderStory(){
+  const s=ST.s, h=hero(), hs=stageEmoji(h,stageOf(levelInfo().level));
+  const shown=s.lines.slice(0,ST.i+1);
+  const chat=shown.map((l,j)=>{
+    if(l[0]==='q') return '';
+    const me=l[0]==='h';
+    return `<div class="msg ${me?'me':''}"><span class="av">${me?hs:s.npc}</span><div class="bb" onclick="say('${l[1]}')">
+      <div class="zh">${nameIn(l[1])}</div><div class="small">${nameIn(l[2])}</div><details onclick="event.stopPropagation()"><summary>перевод</summary>${nameIn(l[3])}</details></div></div>`;
+  }).join('');
+  const cur=s.lines[ST.i], end=ST.i>=s.lines.length-1;
+  let bottom='';
+  if(cur[0]==='q' && !ST.answered){
+    const order=shuffle(cur[2].map((_,k)=>k));
+    bottom=`<div class="tip"><b>❓ ${cur[1]}</b></div><div class="options one">${order.map(k=>`<button class="opt" data-k="${k}" onclick="storyAns(${k})">${cur[2][k]}</button>`).join('')}</div>`;
+  } else if(!end){
+    bottom=`<button class="btn big mt" onclick="ST.i++;ST.answered=false;renderStory();storySay()">Дальше →</button>`;
+  } else {
+    bottom=`<button class="btn green big mt" onclick="finishStory()">Конец истории 🎉</button>`;
+  }
+  app.innerHTML=back('screenStories()',s.title)+`<div class="card mt"><div class="small muted center">${s.npc} ${s.nn} и ${hs} ${state.heroName}</div><div class="chat">${chat}</div>${bottom}<div id="fbx"></div></div>`;
+  window.scrollTo(0,document.body.scrollHeight);
+}
+function storySay(){ const l=ST.s.lines[ST.i]; if(l[0]!=='q') say(l[1]); }
+function storyAns(k){
+  const cur=ST.s.lines[ST.i], ok=k===cur[3]; ST.q++; if(ok) ST.ok++;
+  document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;const kk=+b.dataset.k;if(kk===cur[3])b.classList.add('right');else if(kk===k)b.classList.add('wrongc');});
+  ok?sfx.ok():sfx.no();
+  ST.answered=true;
+  const end=ST.i>=ST.s.lines.length-1;
+  $('#fbx').innerHTML=`<div class="feedback ${ok?'ok':'no'}">${ok?rnd(PRAISE):'Правильный ответ: '+cur[2][cur[3]]}
+    <br><button class="btn mt" onclick="${end?'finishStory()':'ST.i++;ST.answered=false;renderStory();storySay()'}">Дальше →</button></div>`;
+}
+function finishStory(){
+  const first=!state.stories[ST.s.id]; state.stories[ST.s.id]=true;
+  const x=first?25:8, c=first?10:2; addXP(x); addCoins(c); addEnergy(5); questAdd('story',1); save(); sfx.win(); confetti();
+  app.innerHTML=`<div class="card center"><div style="font-size:70px">📖</div><h1>История прочитана!</h1>
+    <p>Вопросы: ${ST.ok}/${ST.q} ✅</p><p>+${x} ✨ +${c} 💴</p>
+    <button class="btn big" onclick="screenStories()">К историям</button><button class="btn ghost big mt" onclick="screenHome()">На главную</button></div>`;
+  checkAch();
+}
+
+/* =========================================================
+   ТОНЫ
+   ========================================================= */
+let T=null;
+function screenTones(){
+  T=null;
+  app.innerHTML=back('screenHome()','🎵 Тоны')+`
+  <div class="card mt"><p style="margin-top:0">В китайском один и тот же слог можно сказать 4 способами — и смысл меняется! Нажми и послушай:</p>
+  <div class="tones">${TONE_INFO.map((x,i)=>`<button class="tone c${x.t}" onclick="say('${TONE_SETS[0][i][0]}',0.6)"><b>${TONE_SETS[0][i][1]} ${x.mark}</b>${x.name}: ${x.how}<br><span class="zh">${TONE_SETS[0][i][0]}</span> — ${TONE_SETS[0][i][2]}</button>`).join('')}</div>
+  <div class="tip">✋ Совет: рисуй тон рукой в воздухе, пока говоришь!</div>
+  <button class="btn big violet mt" onclick="toneStart()">Играть: угадай тон 🎯</button></div>`;
+}
+function toneStart(){ T={round:0,total:8,ok:0}; toneRound(); }
+function toneRound(){
+  if(T.round>=T.total){
+    const x=T.ok*5, c=Math.floor(T.ok/2); addXP(x); addCoins(c); addEnergy(T.ok); state.toneCorrect+=T.ok; save(); sfx.win(); if(T.ok>=6) confetti();
+    app.innerHTML=`<div class="card center"><h1>🎵 Готово!</h1><h2 class="mt">Угадано ${T.ok} из ${T.total}</h2><p>+${x} ✨ +${c} 💴</p>
+      <button class="btn big violet" onclick="toneStart()">Ещё раз</button><button class="btn ghost big mt" onclick="screenHome()">На главную</button></div>`;
+    checkAch(); return;
+  }
+  const set=rnd(TONE_SETS), ti=Math.random()*4|0;
+  T.cur={set,ti};
+  app.innerHTML=`<div class="row between"><button class="icon-btn" onclick="screenTones()">✕</button><b>Раунд ${T.round+1}/${T.total}</b><span>✅ ${T.ok}</span></div>
+  <div class="card mt center"><h2>Какой это тон?</h2><button class="speak mt" onclick="say('${set[ti][0]}',0.6)">🔊</button>
+  <div class="options">${TONE_INFO.map((x,i)=>`<button class="opt" data-t="${i}" onclick="toneAns(${i})"><b class="t${x.t}" style="font-size:34px">${set[i][1]}</b><span class="small">${x.t} · ${x.name} ${x.mark}</span></button>`).join('')}</div><div id="fbx"></div></div>`;
+  setTimeout(()=>say(set[ti][0],0.6),350);
+}
+function toneAns(i){
+  const {set,ti}=T.cur, ok=i===ti;
+  document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;const k=+b.dataset.t;if(k===ti)b.classList.add('right');else if(k===i)b.classList.add('wrongc');});
+  if(ok){T.ok++;sfx.ok();questAdd('tone',1);save();}else sfx.no();
+  $('#fbx').innerHTML=`<div class="feedback ${ok?'ok':'no'}">${ok?rnd(PRAISE):'Это был '+(ti+1)+'-й тон'}: <span class="zh">${set[ti][0]}</span> ${set[ti][1]} — ${set[ti][2]}
+    <br><button class="btn mt" onclick="T.round++;toneRound()">Дальше →</button></div>`;
+}
+
+/* =========================================================
+   ПРОПИСИ: Hanzi Writer (порядок черт + проверка), без интернета — обводка
+   ========================================================= */
+const WRITE_BASE='一二三十人口日月山大小木水火';
+let WR={ch:null,drew:false};
+function writeChars(){ const s=new Set([...WRITE_BASE]); Object.keys(state.words).forEach(id=>[...WBY[id].h].forEach(c=>s.add(c))); return [...s]; }
+function charInfo(c){ return WORDS.find(w=>w.h===c)||WORDS.find(w=>w.h.includes(c)); }
+function writeReward(mistakes){
+  state.writeCount++; questAdd('write',1); const dr=dayRec(); dr.wxp=dr.wxp||0;
+  let msg=mistakes===0?'Идеально! 🖌️':rnd(PRAISE);
+  if(dr.wxp<40){ addXP(5); addCoins(1); dr.wxp+=5; addEnergy(1); msg+=' +5 ✨ +1 💴'; }
+  sfx.ok(); toast(msg); save(); checkAch();
+}
+function nextWriteChar(){ const list=writeChars(), i=list.indexOf(WR.ch); setTimeout(()=>screenWrite(list[(i+1)%list.length]),1300); }
+function screenWrite(ch,forceCanvas){
+  const list=writeChars(); WR.ch=ch||WR.ch||list[0]; WR.drew=false;
+  const w=charInfo(WR.ch), smart=!!window.HanziWriter&&!forceCanvas;
+  app.innerHTML=back('screenHome()','✍️ Прописи')+`
+  <div class="card mt center">
+    <div class="chips">${list.map(c=>`<button class="chip zh ${c===WR.ch?'sel':''}" onclick="screenWrite('${c}')">${c}</button>`).join('')}</div>
+    ${w?`<p class="mt">${w.h===WR.ch?`<b>${cpy(w.p)}</b> — ${w.ru} ${w.e}`:`из слова <span class="zh">${w.h}</span> (${w.ru})`}</p>`:''}
+    <div class="pad" id="pad">${GRID}${smart?'<div id="hw"></div>':`<div class="trace kai">${WR.ch}</div><canvas id="cv"></canvas>`}</div>
+    <div class="small muted">${smart?'Посмотри, как пишется, потом пиши сам черту за чертой. Ошибёшься — подскажу!':'Обведи иероглиф пальцем или мышкой. Черты пишем сверху вниз и слева направо.'}</div>
+    <div class="row cen mt wrap">${smart?'<button class="icon-btn" onclick="hwDemo()">▶ Как писать</button><button class="icon-btn" onclick="HW&&(HW.cancelQuiz(),hwQuiz())">🔁 Заново</button>'
+      :'<button class="icon-btn" onclick="clearPad()">🧽 Стереть</button><button class="btn green" onclick="writeDone()">Готово ✓</button>'}
+      <button class="icon-btn" onclick="say('${WR.ch}')">🔊</button></div>
+  </div>`;
+  if(smart) mountWriter(WR.ch,m=>{ if(m===null){ screenWrite(WR.ch,true); return; } writeReward(m); nextWriteChar(); });
+  else setupPad();
+}
+function setupPad(){
+  const cv=$('#cv'), r=cv.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  cv.width=r.width*dpr; cv.height=r.height*dpr; const g=cv.getContext('2d'); g.scale(dpr,dpr);
+  g.lineCap='round'; g.lineJoin='round'; g.lineWidth=r.width/22; g.strokeStyle='#2b2350';
+  let down=false;
+  const pos=e=>{const b=cv.getBoundingClientRect();return [e.clientX-b.left,e.clientY-b.top];};
+  cv.onpointerdown=e=>{down=true;cv.setPointerCapture(e.pointerId);const [x,y]=pos(e);g.beginPath();g.moveTo(x,y);g.lineTo(x+.1,y+.1);g.stroke();WR.drew=true;};
+  cv.onpointermove=e=>{if(!down)return;const [x,y]=pos(e);g.lineTo(x,y);g.stroke();};
+  cv.onpointerup=cv.onpointercancel=()=>{down=false;};
+}
+function clearPad(){ const cv=$('#cv'); cv.getContext('2d').clearRect(0,0,cv.width,cv.height); WR.drew=false; }
+function writeDone(){ if(!WR.drew){ toast('Сначала обведи иероглиф ✍️'); return; } writeReward(1); nextWriteChar(); }
+
+/* =========================================================
+   СЛОВАРИК И НАГРАДЫ
+   ========================================================= */
+function screenDict(){
+  const n=openUnits();
+  app.innerHTML=back('screenHome()','📚 Словарик')+`
+  <p class="muted small">Нажми на слово, чтобы послушать. Звёздочки — насколько хорошо слово запомнилось (5 ★ = золотое слово).</p>
+  ${UNITS.map((u,i)=>{const ws=unitWords(i);const got=ws.filter(w=>(state.words[w.id]||{}).box>=1).length;const locked=i>=n;
+    return `<div class="card unit ${locked?'locked':''}"><div class="row between"><h3>${u.icon} ${u.name}${u.hsk?` <span class="hsk">HSK ${u.hsk}</span>`:''}</h3><span class="small">${locked?'🔒 откроется позже':`${got}/${ws.length}`}</span></div>
+    ${locked?'':`<div class="words">${ws.map(w=>{const r=state.words[w.id];return `<button class="w" onclick="say('${w.h}')"><div class="hz zh">${r?chz(w.h,w.p):'？'}</div><div class="small">${r?cpy(w.p):''}</div><div>${r?w.e+' '+w.ru:'<span class=muted>ещё не изучено</span>'}</div><div class="stars">${r?'★'.repeat(r.box)+'<span style="color:#e8dfcc">'+'★'.repeat(5-r.box)+'</span>':''}</div></button>`}).join('')}</div>`}</div>`}).join('')}
+  ${(()=>{const ws=WORDS.filter(w=>w.ev&&state.words[w.id]);return ws.length?`<div class="card unit"><h3>🏮 Праздничные слова</h3><div class="words">${ws.map(w=>`<button class="w" onclick="say('${w.h}')"><div class="hz zh">${chz(w.h,w.p)}</div><div class="small">${cpy(w.p)}</div><div>${w.e} ${w.ru}</div></button>`).join('')}</div></div>`:''})()}`;
+}
+/* =========================================================
+   ПРОВЕРКА МИКРОФОНА: пошаговая диагностика с подсказками для Safari
+   ========================================================= */
+let MC={};
+function screenMic(from){
+  MC.from=from||MC.from||'parent';
+  const isSafari=/Safari/.test(navigator.userAgent)&&!/Chrome|Chromium|Edg/.test(navigator.userAgent);
+  const row=(ok,title,body)=>`<div class="check"><span class="st">${ok===true?'✅':ok===false?'❌':'⬜'}</span><div><b>${title}</b>${body?`<div class="small mt">${body}</div>`:''}</div></div>`;
+  const safariSite=`В верхнем меню Mac: <b>Safari → Настройки для «localhost»…</b> → в строке <b>Микрофон</b> выберите <b>«Разрешить»</b>. Затем нажмите «Проверить» ещё раз.`;
+  const macMic=`Откройте <b>Системные настройки → Конфиденциальность и безопасность → Микрофон</b> и включите переключатель у <b>${isSafari?'Safari':'вашего браузера'}</b>. Браузер попросит перезапуститься — согласитесь, затем снова запустите тренажёр ярлыком.`;
+  const macSR=`Откройте <b>Системные настройки → Конфиденциальность и безопасность → Распознавание речи</b> и включите <b>${isSafari?'Safari':'браузер'}</b>. Если Safari там нет: <b>Системные настройки → Клавиатура → Диктовка</b> — включите диктовку. Затем перезапустите Safari.`;
+  app.innerHTML=back(MC.from==='lesson'?'S?renderTask():screenHome()':MC.from==='parent'?'screenParent()':'screenHome()','🎤 Микрофон')+`
+  <div class="card mt"><p style="margin-top:0">Проверим по шагам, что мешает. Компьютер сам покажет, где нажать.</p>
+    ${row(ON_SERVER,'1. Тренажёр открыт правильно', ON_SERVER?'Тренажёр открыт по ссылке — микрофону можно работать.':'Сейчас тренажёр открыт как файл. Закройте эту вкладку и дважды щёлкните «Запустить тренажер.command» в папке тренажёра.')}
+    ${row(!!SR,'2. Браузер умеет распознавать речь', SR?'':'Этот браузер не умеет. Используйте Safari или Chrome.')}
+    ${row(MC.mic,'3. Доступ к микрофону', MC.mic===false?(MC.micErr==='NotFoundError'?'Микрофон не найден. Подключите наушники с микрофоном или проверьте встроенный.':`Safari не дал доступ. ${safariSite}<br><br>Если окна с вопросом не было вообще: ${macMic}`):MC.mic?'Микрофон работает!':'Нажмите кнопку ниже. Safari спросит: «Разрешить localhost использовать микрофон?» — нажмите <b>«Разрешить»</b>.')}
+    ${row(MC.sr,'4. Распознавание китайской речи', MC.sr===false?(MC.srErr==='not-allowed'||MC.srErr==='service-not-allowed'?macSR:MC.srErr==='no-speech'?'Ничего не услышал — нажмите ещё раз и скажите «你好» (ни хао) погромче.':`Ошибка: ${MC.srErr}. Попробуйте ещё раз.`):MC.sr?`Услышал: <span class="zh">${MC.heard}</span> — всё работает! 🎉`:'После шага 3 нажмите «Скажи 你好» и произнесите «ни хао».')}
+    <div class="row wrap mt">
+      <button class="btn" ${ON_SERVER?'':'disabled'} onclick="micStep3()">🎤 Проверить доступ</button>
+      <button class="btn violet" ${MC.mic?'':'disabled'} onclick="micStep4()">🗣️ Скажи 你好</button>
+    </div>
+    ${MC.sr?`<button class="btn green big mt" onclick="state.settings.speak=true;save();${MC.from==='lesson'?'S?renderTask():screenHome()':'screenHome()'}">Готово — можно заниматься! 🎉</button>`:''}
+  </div>
+  <p class="small muted">Если всё равно не получается, кнопка «🙊 Не могу сейчас говорить» в уроке просто пропустит задания на произношение — без штрафов.</p>`;
+}
+async function micStep3(){ const r=await ensureMic(); MC.mic=r===true; MC.micErr=r===true?null:r; screenMic(); }
+function micStep4(){
+  const b=document.querySelectorAll('.btn.violet')[0]; if(b){ b.textContent='Слушаю… скажи «ни хао»'; b.disabled=true; }
+  listen((alts,err)=>{ if(err){ MC.sr=false; MC.srErr=err; } else { MC.heard=alts[0]||''; MC.sr=!!MC.heard; MC.srErr=MC.heard?null:'no-speech'; } screenMic(); });
+}
+function screenAch(){
+  const li=levelInfo(),h=hero();
+  app.innerHTML=back('screenHome()','🏆 Награды')+`
+  <h3 class="mt">Эволюция героя</h3>
+  <div class="card mt row wrap" style="justify-content:space-around">${STAGE_LV.map((lv,i)=>{const got=stageOf(li.level)>=i;return `<div class="center ${i>=5?LEGEND[i-5].c:''}" style="opacity:${got?1:.3};width:96px"><div class="hero-emoji" style="position:static;font-size:44px">${got?stageEmoji(h,i):'❓'}</div><div class="small">${i>=5?LEGEND[i-5].n:h.ti[i]}</div><div class="small muted">ур. ${lv}</div></div>`}).join('')}</div>
+  <h3 class="mt2">Секретные герои</h3>
+  <div class="ach mt">${HEROES.filter(x=>x.lock).map(x=>`<div class="a ${heroLocked(x)?'off':''}"><div class="e">${heroLocked(x)?'🔒':x.st[1]}</div><b>${x.name}</b><div class="small muted">уровень ${x.lock}</div></div>`).join('')}</div>
+  <h3 class="mt2">Снаряжение</h3>
+  <div class="ach mt">${ITEMS.map(i=>`<div class="a ${li.level>=i.lv?'':'off'}"><div class="e">${i.e}</div><b>${i.n}</b><div class="small muted">уровень ${i.lv}</div></div>`).join('')}</div>
+  <h3 class="mt2">Медали</h3>
+  <div class="ach mt">${ACH.map(a=>`<div class="a ${state.ach.includes(a.id)?'':'off'}"><div class="e">${a.e}</div><b>${a.n}</b><div class="small muted">${a.d}</div></div>`).join('')}</div>`;
+}
+
+/* =========================================================
+   РОДИТЕЛЯМ
+   ========================================================= */
+function screenParentGate(){
+  const a=6+(Math.random()*4|0), b=6+(Math.random()*4|0);
+  app.innerHTML=back('screenHome()','Для взрослых')+`
+  <div class="card mt center"><p>Решите пример, чтобы войти:</p><h2>${a} × ${b} = ?</h2>
+  <input id="pg" type="number" inputmode="numeric" style="max-width:180px;text-align:center" class="mt"><br>
+  <button class="btn mt" onclick="($('#pg').value==${a*b})?screenParent():toast('Неверно')">Войти</button></div>`;
+}
+function screenParent(){
+  const days=[...Array(14)].map((_,i)=>addDays(today(),i-13));
+  const maxXP=Math.max(20,...days.map(d=>(state.days[d]||{}).xp||0));
+  const tot=Object.values(state.days).reduce((a,d)=>({c:a.c+d.correct,w:a.w+d.wrong,m:a.m+d.min}),{c:0,w:0,m:0});
+  const hard=Object.entries(state.words).filter(([,r])=>r.w>0).sort((a,b)=>b[1].w-a[1].w).slice(0,8);
+  app.innerHTML=back('screenHome()','👨‍👩‍👧 Родителям')+`
+  ${zhVoice?'':`<div class="card mt tip"><b>⚠️ Не найден китайский голос.</b> На Mac: Системные настройки → Универсальный доступ → Устный контент → Системный голос → Управлять голосами → Китайский (Tingting). В Windows: Параметры → Время и язык → Речь → добавить «Китайский (упрощ.)». Лучше всего работает в Chrome или Safari.</div>`}
+  ${SR?'':`<div class="card mt tip"><b>🎤 Этот браузер не умеет распознавать речь</b> — упражнения на говорение отключены. Откройте тренажёр в Chrome или Safari.</div>`}
+  <div class="card mt"><h3>Статистика</h3>
+    <div class="stat-grid"><div class="stat"><b>${state.sessions}</b><span class="small muted">уроков</span></div>
+    <div class="stat"><b>${learnedCount()}/${COURSE.length}</b><span class="small muted">слов изучено</span></div>
+    <div class="stat"><b>${Object.values(state.words).filter(r=>r.box>=4).length}</b><span class="small muted">слов в долгой памяти</span></div>
+    <div class="stat"><b>${tot.c+tot.w?Math.round(tot.c/(tot.c+tot.w)*100):0}%</b><span class="small muted">точность</span></div>
+    <div class="stat"><b>${state.bestStreak}</b><span class="small muted">рекорд дней подряд</span></div>
+    <div class="stat"><b>${tot.m}</b><span class="small muted">минут всего</span></div>
+    <div class="stat"><b>${state.speakCount}</b><span class="small muted">слов сказано</span></div>
+    <div class="stat"><b>${state.writeCount}</b><span class="small muted">иероглифов написано</span></div>
+    <div class="stat"><b>${Object.keys(state.bosses).length}/${UNITS.length}</b><span class="small muted">боссов побеждено</span></div></div>
+    <p class="small muted mt">Опыт по дням (последние 14 дней):</p>
+    <div class="chart">${days.map(d=>{const x=(state.days[d]||{}).xp||0;return `<div class="${x?'':'zero'}" title="${d}: ${x} XP" style="height:${x/maxXP*100}%"></div>`}).join('')}</div>
+    <div class="row between small muted"><span>${days[0].slice(5)}</span><span>сегодня</span></div>
+    ${hard.length?`<h3 class="mt2">Трудные слова</h3><table>${hard.map(([id,r])=>{const w=WBY[id];return `<tr><td class="zh" style="font-size:22px">${w.h}</td><td>${w.p}</td><td>${w.ru}</td><td>❌ ${r.w} / ✅ ${r.c}</td></tr>`}).join('')}</table>`:''}
+  </div>
+  <div class="card mt"><h3>Настройки</h3>
+    <label class="setting">Скорость речи <input type="range" min="0.5" max="1" step="0.05" value="${state.settings.rate}" oninput="state.settings.rate=+this.value;save()" onchange="say('你好，我是你的老师')"></label>
+    <label class="setting">Новых слов за урок
+      <select onchange="state.settings.newPerSession=+this.value;save()" style="font:inherit;font-size:18px;padding:6px;border-radius:10px">${[2,3,4,5,6].map(n=>`<option ${n===state.settings.newPerSession?'selected':''}>${n}</option>`).join('')}</select></label>
+    <label class="setting">Ступень сложности <select onchange="state.settings.step=+this.value;save()" style="font:inherit;font-size:16px;padding:6px;border-radius:10px">
+      <option value="0" ${!state.settings.step?'selected':''}>Авто (сейчас ${autoStep()})</option>${[1,2,3,4].map(n=>`<option value="${n}" ${state.settings.step===n?'selected':''}>${n} — ${STEPS[n]}</option>`).join('')}</select></label>
+    <label class="setting">🎤 Микрофон для произношения <button class="btn violet" style="padding:8px 14px;font-size:16px" onclick="screenMic('parent')">Проверить и включить</button></label>
+    <label class="setting">Упражнения на говорение (микрофон) <input type="checkbox" ${state.settings.speak?'checked':''} ${SR?'':'disabled'} onchange="state.settings.speak=this.checked;save()" style="width:26px;height:26px"></label>
+    <label class="setting">Открыть все темы сразу <input type="checkbox" ${state.settings.allOpen?'checked':''} onchange="state.settings.allOpen=this.checked;save()" style="width:26px;height:26px"></label>
+    <label class="setting">Сменить героя или имя <button class="icon-btn" onclick="screenStart()">Изменить</button></label>
+  </div>
+  <div class="card mt"><h3>Резервная копия прогресса</h3>
+    <p class="small ${ON_SERVER&&serverSaved!==false?'':'muted'}">${!HAS_API&&ON_SERVER
+      ? '✅ Прогресс сохраняется автоматически в этом браузере на этом устройстве. Занимайтесь всегда в одном и том же браузере. Для надёжности раз в неделю нажимайте «Сохранить в файл».'
+      : ON_SERVER
+      ? (serverSaved===false?'⚠️ Не удалось сохранить в файл — проверьте, что окно Терминала тренажёра открыто.':'✅ Прогресс автоматически сохраняется в файл <b>progress.json</b> в папке тренажёра, а копии за последние 30 дней — в папке <b>progress-backups</b>. Он не зависит от браузера.')
+      : '⚠️ Тренажёр открыт как файл: прогресс хранится только в этом браузере. Запускайте его через «Запустить тренажер.command».'}</p>
+    <p class="small muted">Файл-копия ниже нужен, чтобы перенести прогресс на другой компьютер.</p>
+    <div class="row wrap"><button class="btn violet" onclick="exportData()">💾 Сохранить в файл</button>
+    <label class="btn ghost">📂 Загрузить из файла<input type="file" accept=".json" hidden onchange="importData(this.files[0])"></label></div>
+    <button class="icon-btn mt" style="color:var(--red)" onclick="resetAll()">Сбросить весь прогресс</button>
+  </div>
+  <div class="card mt"><h3>Как устроен тренажёр</h3>
+    <details><summary>Методика (коротко)</summary><ul class="small">
+      <li><b>Короткие уроки (~10 мин) каждый день</b> — для 8 лет регулярность важнее длительности.</li>
+      <li><b>Интервальные повторения (коробки Лейтнера)</b>: слово повторяется через 1, 2, 4, 7, 15 дней. Ошибка возвращает его в начало.</li>
+      <li><b>Не больше 4 новых слов за урок</b> и сразу активное вспоминание (тесты), а не пассивное чтение.</li>
+      <li><b>Все четыре навыка</b>: слушать (аудио), говорить (микрофон), читать (иероглифы, истории), писать (порядок черт с проверкой).</li>
+      <li><b>Сборка фраз из плиток</b> — грамматика без правил: ребёнок сам видит порядок слов «я + люблю + маму».</li>
+      <li><b>Истории</b> — слова в живом диалоге с вопросами на понимание.</li>
+      <li><b>Цветные тоны</b>: 1 — красный, 2 — оранжевый, 3 — зелёный, 4 — синий, лёгкий — серый.</li>
+      <li><b>Ошибки не наказываются</b>: без таймеров и «жизней», ошибочное слово повторяется в конце урока и попадает в «Работу над ошибками».</li>
+    </ul></details>
+    <details><summary>Игровая механика</summary><ul class="small">
+      <li>Опыт → уровни → снаряжение и 5 стадий эволюции героя.</li>
+      <li>Энергия растёт от занятий; <b>каждый пропущенный день −20 энергии</b> и сброс серии — если нет ❄️ заморозки.</li>
+      <li>Юани 💴 за ответы, уроки, боссов и сундуки → магазин: питомцы, фоны, ауры, заморозки.</li>
+      <li>3 задания дня → сундук. Комбо: 5 верных подряд = опыт ×2.</li>
+      <li>Карта тем с боссами: победа над боссом (80% верных) сразу открывает следующую тему.</li>
+      <li>Уровни и предметы никогда не отнимаются — чтобы не рушить мотивацию.</li>
+    </ul></details>
+    <details><summary>Что нужно для работы</summary><ul class="small">
+      <li>Интернет — для анимации порядка черт (без него прописи работают в режиме обводки).</li>
+      <li>Микрофон и Chrome/Safari — для упражнений на говорение.</li>
+    </ul></details>
+  </div>`;
+}
+function exportData(){
+  const b=new Blob([JSON.stringify(state,null,1)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`kitaiskiy-progress-${today()}.json`; a.click(); URL.revokeObjectURL(a.href);
+}
+function importData(f){
+  if(!f) return; const rd=new FileReader();
+  rd.onload=()=>{ try{ const d=JSON.parse(rd.result); if(!d||typeof d.xp!=='number') throw 0;
+    const merge=hasProgress(state)&&confirm('Объединить с текущим прогрессом?\nОК — сложить оба прогресса (ничего не потеряется)\nОтмена — заменить текущий прогресс загруженным');
+    state=merge?mergeState(state,d):normalize(d); save(); backup(); toast(merge?'Прогресс объединён ✅':'Прогресс загружен ✅'); screenHome(); }catch(e){ toast('Не получилось прочитать файл'); } };
+  rd.readAsText(f);
+}
+function resetAll(){ if(confirm('Точно стереть весь прогресс?') && confirm('Это нельзя отменить. Стереть?')){ localStorage.removeItem(KEY); localStorage.removeItem(KEY+'-backup'); state=fresh(); save(); screenStart(); } }
+
+/* старт */
+load();
+syncOnStart().then(()=>{ applyDecay(); if(location.hash==='#mic'&&state.heroId){ history.replaceState(null,'',location.pathname); screenMic('home'); } else screenHome(); });
+window.addEventListener('beforeunload',()=>{ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} if(HAS_API) pushServer(true); });
+</script>
+</body>
+</html>
