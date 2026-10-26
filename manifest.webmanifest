@@ -1,0 +1,15 @@
+{
+  "name": "Китайский с героем",
+  "short_name": "Китайский",
+  "description": "Тренажёр китайского языка для детей: слова HSK 1–2, уроки, произношение, иероглифы. Без регистрации.",
+  "lang": "ru",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff6e8",
+  "theme_color": "#ff7a45",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
