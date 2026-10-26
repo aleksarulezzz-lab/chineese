@@ -4,6 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Китайский с героем</title>
+<meta name="description" content="Тренажёр китайского языка для детей: слова HSK 1–2, короткие уроки, произношение, иероглифы и истории. Без регистрации.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="Китайский с героем">
+<meta property="og:description" content="Тренажёр китайского языка для детей: слова HSK 1–2, короткие уроки, произношение, иероглифы и истории. Без регистрации.">
+<meta property="og:url" content="https://aleksarulezzz.ru/chineese/">
+<meta property="og:image" content="https://aleksarulezzz.ru/chineese/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#ff7a45">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Китайский">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
 <!-- Hanzi Writer: анимация порядка черт и проверка письма (нужен интернет; без него — обычные прописи) -->
@@ -1732,6 +1748,14 @@ function screenParent(){
     <button class="icon-btn mt" style="color:var(--red)" onclick="resetAll()">Сбросить весь прогресс</button>
   </div>
   <div class="card mt"><h3>Как устроен тренажёр</h3>
+    <details><summary>📱 Установить на телефон как приложение</summary><div class="small">
+      <p>Тренажёр можно поставить на главный экран телефона или планшета. Он будет открываться по значку, без адресной строки, и работать даже без интернета.</p>
+      <p><b>iPhone и iPad (Safari):</b> «Поделиться» (квадрат со стрелкой вверх) → «На экран „Домой“» → «Добавить».</p>
+      <p><b>Android (Chrome):</b> ⋮ в правом верхнем углу → «Установить приложение» или «Добавить на главный экран».</p>
+      <p><b>Компьютер (Chrome или Edge):</b> значок установки в правой части адресной строки.</p>
+      <button class="btn violet installBtn" ${window.__installPrompt?'':'hidden'} onclick="installApp()">📲 Установить сейчас</button>
+      <p class="muted"><b>Важно для iPhone и iPad:</b> у значка на экране «Домой» свой прогресс, отдельный от Safari. Если уже занимались в Safari, перенесите прогресс: «Сохранить в файл» в Safari, затем «Загрузить из файла» в приложении.</p>
+    </div></details>
     <details><summary>Методика (коротко)</summary><ul class="small">
       <li><b>Короткие уроки (~10 мин) каждый день</b> — для 8 лет регулярность важнее длительности.</li>
       <li><b>Интервальные повторения (коробки Лейтнера)</b>: слово повторяется через 1, 2, 4, 7, 15 дней. Ошибка возвращает его в начало.</li>
@@ -1773,6 +1797,18 @@ function resetAll(){ if(confirm('Точно стереть весь прогре
 load();
 syncOnStart().then(()=>{ applyDecay(); if(location.hash==='#mic'&&state.heroId){ history.replaceState(null,'',location.pathname); screenMic('home'); } else screenHome(); });
 window.addEventListener('beforeunload',()=>{ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} if(HAS_API) pushServer(true); });
+</script>
+<script>
+/* Установка на телефон и работа без интернета (sw.js). Только на сайте (https):
+   локальный server.py и открытие файлом работают как раньше. */
+(function(){
+  try{ localStorage.removeItem('hanzi-hero-app-html'); }catch(e){} // копия от старой страницы-указателя больше не нужна
+  if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+  const btns=show=>document.querySelectorAll('.installBtn').forEach(b=>b.hidden=!show);
+  addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__installPrompt=e;btns(true)});
+  addEventListener('appinstalled',()=>{window.__installPrompt=null;btns(false)});
+  window.installApp=function(){const e=window.__installPrompt;if(!e)return;e.prompt();e.userChoice.finally(()=>{window.__installPrompt=null;btns(false)})};
+})();
 </script>
 </body>
 </html>
