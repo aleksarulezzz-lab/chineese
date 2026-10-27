@@ -1276,7 +1276,7 @@ function reward(base){
   S.combo++; S.maxCombo=Math.max(S.maxCombo,S.combo); state.maxCombo=Math.max(state.maxCombo,S.combo);
   questAdd('combo',S.combo,true);
   const mult=S.combo>=5?2:1, x=base*mult;
-  addXP(x); S.xp+=x; addCoins(1); S.coins++; addEnergy(3); S.right++; dayRec().correct++;
+  addXP(x); S.xp+=x; addCoins(1); S.coins++; addEnergy(3); S.right++; dayRec().correct++; window.statSolved&&statSolved();
   sfx.ok(); hitMonster();
   return {x,mult};
 }
@@ -1756,6 +1756,10 @@ function screenParent(){
       <button class="btn violet installBtn" ${window.__installPrompt?'':'hidden'} onclick="installApp()">📲 Установить сейчас</button>
       <p class="muted"><b>Важно для iPhone и iPad:</b> у значка на экране «Домой» свой прогресс, отдельный от Safari. Если уже занимались в Safari, перенесите прогресс: «Сохранить в файл» в Safari, затем «Загрузить из файла» в приложении.</p>
     </div></details>
+    <details><summary>🔒 Какие данные собирает тренажёр</summary><div class="small">
+      <p>Персональные данные тренажёр не собирает: без регистрации, без cookies. Прогресс хранится только на этом устройстве.</p>
+      <p>Для статистики мы считаем лишь общие цифры за день: сколько раз открыли тренажёр и сколько ответов было верных. IP-адреса, имена и идентификаторы не передаются и не хранятся.</p>
+    </div></details>
     <details><summary>Методика (коротко)</summary><ul class="small">
       <li><b>Короткие уроки (~10 мин) каждый день</b> — для 8 лет регулярность важнее длительности.</li>
       <li><b>Интервальные повторения (коробки Лейтнера)</b>: слово повторяется через 1, 2, 4, 7, 15 дней. Ошибка возвращает его в начало.</li>
@@ -1808,6 +1812,24 @@ window.addEventListener('beforeunload',()=>{ try{ localStorage.setItem(KEY,JSON.
   addEventListener('beforeinstallprompt',e=>{e.preventDefault();window.__installPrompt=e;btns(true)});
   addEventListener('appinstalled',()=>{window.__installPrompt=null;btns(false)});
   window.installApp=function(){const e=window.__installPrompt;if(!e)return;e.prompt();e.userChoice.finally(()=>{window.__installPrompt=null;btns(false)})};
+})();
+</script>
+<script>
+/* Анонимный счётчик для вечернего отчёта: «открыли», «первое открытие за день на устройстве»
+   и сколько ответов верных. Без cookies, IP и идентификаторов — на сервер уходят только эти числа.
+   Флажок «сегодня уже посчитан» лежит в localStorage и никуда не отправляется. Только на сайте. */
+(function(){
+  if(location.hostname!=='aleksarulezzz.ru') return;
+  const URL='https://lashmaker-booking.alekssandra86.workers.dev/api/hit', SITE='chinese', KEY='statsDay';
+  const send=o=>{try{navigator.sendBeacon(URL,new Blob([JSON.stringify({site:SITE,...o})],{type:'text/plain'}))}catch(e){}};
+  const day=new Date(Date.now()+3*3600e3).toISOString().slice(0,10); // день по Москве, как в отчёте
+  let first=false; try{ first=localStorage.getItem(KEY)!==day; localStorage.setItem(KEY,day); }catch(e){}
+  send({open:1,device:first?1:0});
+  let solved=0;
+  window.statSolved=()=>{solved++};
+  const flush=()=>{if(solved){send({solved});solved=0}};
+  addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
+  addEventListener('pagehide',flush);
 })();
 </script>
 </body>
